@@ -1,6 +1,6 @@
 function logBeta = betaRecursion(Y,Pi,P,W,C)
     
-    [T,D] = size(Y);
+    [D,T] = size(Y);
     [M,K] = size(Pi);
     logBeta = zeros(T,K^M);
     mu = zeros(K^M,D);
