@@ -33,7 +33,7 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,tol)
         
         % M step
         Pi = reshape(gamma(1,:)*aux,[K,M])';
-        W = 
+        
         %C = Y*Y'/T - 1/T * ;
         
         if (tau > 1) && (LL(end) - LL(end-1) < tol)
