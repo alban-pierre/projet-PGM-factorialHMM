@@ -1,6 +1,6 @@
 function logAlpha = alphaRecursion(Y,Pi,P,W,C)
     
-    [T,D] = size(Y);
+    [D,T] = size(Y);
     [M,K] = size(Pi);
     logAlpha = zeros(T,K^M);
     mu = zeros(K^M,D);
