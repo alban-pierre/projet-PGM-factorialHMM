@@ -14,8 +14,7 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,tol)
     states = get_all_states(M,K);
     
     % Build auxilary matrix to compute expectations
-    aux=zeros(K^M,M*K);
-    aux2=zeros(K^M,M*K*M*K); 
+    aux=zeros(K^M,M*K); 
     for i=1:K^M
         for m=1:M
             aux(i,(m-1)*K+states(i,m)) = 1;
