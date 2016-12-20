@@ -4,10 +4,10 @@
 % S = [S_1,...,S_T]                         MK * T
 % W = [W^{1}|...|W^{M}]                     D  * MK
 % P_{i,j} = P(S_{t+1} = i | S_{t+j} = j) 
-% P = [P^{1}|...|P^{M}]]                    K  * MK
+% P = [P^{1}|...|P^{M}]]'                   MK  * K
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-clear;
+%clear;
 
 % To be able to repeat
 rng('default');
@@ -24,8 +24,8 @@ T = 500;
 Pi = rand(M,K);
 Pi = Pi ./ sum(Pi,2);
 
-P = rand(K,M*K);
-P = P ./ sum(P);
+P = rand(M*K,K);
+P = P ./ sum(P,2);
 
 W = randn(D,M*K);
 
@@ -47,7 +47,7 @@ Y(:,1) = mvnrnd(mu,C);
 for t = 2:T
     mu = 0;
     for m = 1:M
-        S((m-1)*K+1:m*K,t) = reshape(mnrnd(1,P(:,(m-1)*K+1:m*K)*S((m-1)*K+1:m*K,t-1))',[K,1]);
+        S((m-1)*K+1:m*K,t) = reshape(mnrnd(1,S((m-1)*K+1:m*K,t-1)'*P((m-1)*K+1:m*K,:)),[K,1]);
         mu = mu + W(:,((m-1)*K+1):m*K) * S((m-1)*K+1:m*K,t);
     end
     Y(:,t) = mvnrnd(mu,C);
