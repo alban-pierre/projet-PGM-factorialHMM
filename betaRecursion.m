@@ -15,7 +15,7 @@ function logBeta = betaRecursion(Y,Pi,P,W,C)
         end
         for j=1:K^M
             for m=1:M
-                Ptrans(i,j)=Ptrans(i,j)*P(states(j,m),(m-1)*K+states(i,m));
+                Ptrans(i,j)=Ptrans(i,j)*P((m-1)*K+states(i,m),states(j,m));
             end
         end
     end
@@ -26,7 +26,7 @@ function logBeta = betaRecursion(Y,Pi,P,W,C)
         end
         
         b = max(logBeta(t,:));
-        logBeta(t-1,:) = log(P_y)' + b + exp((logBeta(t,:)-b)*Ptrans); 
+        logBeta(t-1,:) = b + log(P_y'.*exp((logBeta(t,:)-b))*Ptrans'); 
  
     end
     
