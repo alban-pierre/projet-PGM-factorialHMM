@@ -17,7 +17,7 @@ function logAlpha = alphaRecursion(Y,Pi,P,W,C)
         end
         for j=1:K^M
             for m=1:M
-                Ptrans(i,j)=Ptrans(i,j)*P(states(j,m),(m-1)*K+states(i,m));
+                Ptrans(i,j)=Ptrans(i,j)*P((m-1)*K+states(i,m),states(j,m));
             end
         end
     end
