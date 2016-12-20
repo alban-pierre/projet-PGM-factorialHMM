@@ -15,9 +15,13 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,tol)
     
     % Build auxilary matrix to compute expectations
     aux=zeros(K^M,M*K); 
+    aux2=zeros(K^M,M*M*K*K);
     for i=1:K^M
         for m=1:M
             aux(i,(m-1)*K+states(i,m)) = 1;
+            for l=1:M
+                aux2(i,((m-1)*K+states(i,m)-1)*M*K+(l-1)*K+states(i,l)) = 1;
+            end
         end
     end
     
@@ -27,13 +31,36 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,tol)
         logBeta = betaRecursion(Y,Pi,P,W,C);
         gamma = Gamma(logAlpha,logBeta);
         
+        % <S_t>
+        ESt = gamma * aux;
+        
+        % \sum_{t=1}^T Y_t <S_t>
+        sum1 = zeros(D,K*M);
+        for t = 1:T
+            sum1 = sum1 + Y(:,t) * ESt(t,:);
+        end
+        
+        % p(S^m,S^n|Y) and \sum_{t=1}^T <S_t S_t'>
+        eta =zeros(T*K*M,K*M);
+        sum2=zeros(K*M,K*M);
+        temp=gamma*aux2;
+        for t=1:T
+            eta((t-1)*K*M+1:t*K*M,:)=reshape(temp(t,:),K*M,K*M);
+            for m=1:M
+                for l=1:M
+                    % NOT FINISHED
+                end
+            end
+            sum2 = sum2 + eta((t-1)*K*M+1:t*K*M,:);
+        end
+        
         % Log-likelihood
         ab = max(logAlpha(1,:) + logBeta(1,:),[],2);
         LL = [LL ab + log(sum(exp(logAlpha(1,:) + logBeta(1,:) - ab),2))];
         
         % M step
-        Pi = reshape(gamma(1,:)*aux,[K,M])';
-        
+        Pi = reshape(ESt(1,:)*aux,[K,M])';
+        W = sum1 * pinv(sum2);
         %C = Y*Y'/T - 1/T * ;
         
         if (tau > 1) && (LL(end) - LL(end-1) < tol)
