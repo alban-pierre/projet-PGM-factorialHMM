@@ -8,7 +8,7 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,tol)
     C = eye(D);
     W = randn(D,M*K);
     P = rand(K,M*K);
-    P = P ./ sum(P);
+    P = P ./ sum(P,2);
     LL = [];
     
     states = get_all_states(M,K);
