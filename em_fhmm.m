@@ -40,18 +40,11 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,tol)
             sum1 = sum1 + Y(:,t) * ESt(t,:);
         end
         
-        % p(S^m,S^n|Y) and \sum_{t=1}^T <S_t S_t'>
-        eta =zeros(T*K*M,K*M);
+        % \sum_{t=1}^T <S_t S_t'>
         sum2=zeros(K*M,K*M);
         temp=gamma*aux2;
         for t=1:T
-            eta((t-1)*K*M+1:t*K*M,:)=reshape(temp(t,:),K*M,K*M);
-            for m=1:M
-                for l=1:M
-                    % NOT FINISHED
-                end
-            end
-            sum2 = sum2 + eta((t-1)*K*M+1:t*K*M,:);
+            sum2 = sum2 + reshape(temp(t,:),K*M,K*M);
         end
         
         % Log-likelihood
