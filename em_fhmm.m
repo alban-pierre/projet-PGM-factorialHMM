@@ -1,6 +1,6 @@
 %%% NOT FINISHED
 
-function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,tol)
+function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
     
     % Initialization
     [D,T] = size(Y);
@@ -56,7 +56,7 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,tol)
         W = sum1 * pinv(sum2);
         %C = Y*Y'/T - 1/T * ;
         
-        if (tau > 1) && (LL(end) - LL(end-1) < tol)
+        if (tau > 1) && (LL(end) - LL(end-1) < epsilon)
             break;
         end
     end
