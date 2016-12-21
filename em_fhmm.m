@@ -7,7 +7,7 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
     Pi = 1/K*ones(M,K);
     C = eye(D);
     W = randn(D,M*K);
-    P = rand(K,M*K);
+    P = rand(M*K,K);
     P = P ./ sum(P,2);
     LL = [];
     
