@@ -27,7 +27,7 @@ Pi = Pi ./ sum(Pi,2);
 P = rand(M*K,K);
 P = P ./ sum(P,2);
 
-W = randn(D,M*K);
+W = 2 * randn(D,M*K);
 
 %C = diag(rand(1,D)); % To be sure it is psd
 C = 0.1 * eye(D);
