@@ -24,7 +24,7 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
     end
     
     for tau=1:maxIter
-        %%% E step
+        % E step
         logAlpha = alphaRecursion(Y,Pi,P,W,C);
         logBeta = betaRecursion(Y,Pi,P,W,C);
         gamma = Gamma(logAlpha,logBeta);
