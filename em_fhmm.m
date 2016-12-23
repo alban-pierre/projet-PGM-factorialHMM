@@ -11,7 +11,6 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
     
     % Compute states
     states = get_all_states(M,K);
-    Ptrans = computePtrans(P,states);
     
     % Build auxilary matrix to compute expectations
     aux=zeros(K^M,M*K); 
@@ -26,7 +25,7 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
     end
     
     for tau=1:maxIter
-    	% Compute Ptrans mu and gauss 
+    	% Compute Ptrans, mu and gauss 
 	Ptrans = computePtrans(P,states);
         mu = computeMu(W,states);
         gauss = computeGaussian(Y,mu,C);
