@@ -9,7 +9,9 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
     P = P ./ sum(P,2);
     LL = [];
     
+    % Compute states and Ptrans
     states = get_all_states(M,K);
+    Ptrans = computePtrans(P,states);
     
     % Build auxilary matrix to compute expectations
     aux=zeros(K^M,M*K); 
@@ -24,9 +26,13 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
     end
     
     for tau=1:maxIter
+    	% Compute mu and gauss 
+        mu = computeMu(W,states);
+        gauss = computeGaussian(Y,mu,C);
+	
         % E step
-        logAlpha = alphaRecursion(Y,Pi,P,W,C);
-        logBeta = betaRecursion(Y,Pi,P,W,C);
+        logAlpha = alphaRecursion(Y,Pi,Ptrans,states,gauss);
+        logBeta = betaRecursion(Y,Pi,Ptrans,gauss);
         gamma = Gamma(logAlpha,logBeta);
         
         % <S_t>
@@ -44,25 +50,13 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
         for t=1:T
             sum2 = sum2 + reshape(temp(t,:),K*M,K*M);
         end
-        
-	% Computation of mu
-	mu = zeros(K^M,D);
-	for i=1:K^M
-            for m=1:M
-	         mu(i,:) = mu(i,:) + W(:,(m-1)*K+states(i,m))';
-	    end
-	end
 	
 	% \sum_{t=2}^T <S_t^m S_{t-1}^m>
         sum3 = zeros(M*K,K);
-        P_y = zeros(K^M,1);
         for t = 1:T-1 
-            for i = 1:K^M
-                P_y(i) = mvnpdf(Y(:,t+1)',mu(i,:),C);
-            end
             for m = 1:M
                 temp = log(P((m-1)*K+1:m*K,:)) + ((logAlpha(t,:) * aux(:,(m-1)*K+1:m*K))' * ...
-                       ((logBeta(t+1,:)+log(P_y')) * aux(:,(m-1)*K+1:m*K)));
+                       ((logBeta(t+1,:)+log(gauss(t+1,:))) * aux(:,(m-1)*K+1:m*K)));
                 sum3((m-1)*K+1:m*K,:) = sum3((m-1)*K+1:m*K,:) + temp/sum(sum(temp));        
             end  
         end
