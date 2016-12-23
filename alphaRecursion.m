@@ -33,7 +33,8 @@ function logAlpha = alphaRecursion(Y,Pi,P,W,C)
         else
             % Recursion
             a = max(logAlpha(t,:));
-            logAlpha(t+1,:) = log(P_y)' + a + log(exp(logAlpha(t,:)-a)*Ptrans'); 
+            %---%logAlpha(t+1,:) = log(P_y)' + a + log(exp(logAlpha(t,:)-a)*Ptrans');
+	    logAlpha(t+1,:) = log(P_y)' + a + log(exp(logAlpha(t,:)-a)*Ptrans); 
         end
     end
     

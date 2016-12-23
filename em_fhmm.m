@@ -52,10 +52,15 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
         LL = [LL ab + log(sum(exp(logAlpha(1,:) + logBeta(1,:) - ab),2))];
         
         % M step
-        Pi = reshape(ESt(1,:)*aux,[K,M])';
+        Pi = reshape(ESt(1,:),[K,M])';
+        C = zeros(D);
+	for t=1:T
+	    C = C + Y(:,t)*Y(:,t)' - W*ESt(t,:)'*Y(:,t)';
+	end
+	C = C/T;
         W = sum1 * pinv(sum2);
-        %C = Y*Y'/T - 1/T * ;
-        
+	
+	
         if (tau > 1) && (LL(end) - LL(end-1) < epsilon)
             break;
         end

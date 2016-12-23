@@ -26,7 +26,7 @@ function logBeta = betaRecursion(Y,Pi,P,W,C)
         end
         
         b = max(logBeta(t,:));
-        logBeta(t-1,:) = b + log(P_y'.*exp((logBeta(t,:)-b))*Ptrans'); 
+        logBeta(t-1,:) = b + log((P_y'.*exp(logBeta(t,:)-b))*Ptrans'); 
  
     end
     
