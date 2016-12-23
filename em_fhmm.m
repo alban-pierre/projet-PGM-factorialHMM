@@ -9,7 +9,7 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
     P = P ./ sum(P,2);
     LL = [];
     
-    % Compute states and Ptrans
+    % Compute states
     states = get_all_states(M,K);
     Ptrans = computePtrans(P,states);
     
@@ -26,7 +26,8 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
     end
     
     for tau=1:maxIter
-    	% Compute mu and gauss 
+    	% Compute Ptrans mu and gauss 
+	Ptrans = computePtrans(P,states);
         mu = computeMu(W,states);
         gauss = computeGaussian(Y,mu,C);
 	
@@ -57,7 +58,7 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
             for m = 1:M
                 temp = log(P((m-1)*K+1:m*K,:)) + ((logAlpha(t,:) * aux(:,(m-1)*K+1:m*K))' + ...
                        ((logBeta(t+1,:)+log(gauss(t+1,:))) * aux(:,(m-1)*K+1:m*K)));
-                sum3((m-1)*K+1:m*K,:) = sum3((m-1)*K+1:m*K,:) + exp(temp-sum(sum(temp)));        
+                sum3((m-1)*K+1:m*K,:) = sum3((m-1)*K+1:m*K,:) + exp(temp/sum(sum(temp)));        
             end  
         end
         
