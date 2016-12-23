@@ -55,9 +55,9 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
         sum3 = zeros(M*K,K);
         for t = 1:T-1 
             for m = 1:M
-                temp = log(P((m-1)*K+1:m*K,:)) + ((logAlpha(t,:) * aux(:,(m-1)*K+1:m*K))' * ...
+                temp = log(P((m-1)*K+1:m*K,:)) + ((logAlpha(t,:) * aux(:,(m-1)*K+1:m*K))' + ...
                        ((logBeta(t+1,:)+log(gauss(t+1,:))) * aux(:,(m-1)*K+1:m*K)));
-                sum3((m-1)*K+1:m*K,:) = sum3((m-1)*K+1:m*K,:) + exp(temp/sum(sum(temp)));        
+                sum3((m-1)*K+1:m*K,:) = sum3((m-1)*K+1:m*K,:) + exp(temp-sum(sum(temp)));        
             end  
         end
         
