@@ -7,17 +7,16 @@
 % P = [P^{1}|...|P^{M}]]'                   MK * K
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Computation of mu, alpha, beta and gamma
+% Computations
 generate_fhmm;
 states = get_all_states(M,K);
-mu = zeros(K^M,D);
-for i=1:K^M
-    for m=1:M
-        mu(i,:) = mu(i,:) + W(:,(m-1)*K+states(i,m))';
-    end
-end
-logAlpha = alphaRecursion(Y,Pi,P,W,C);
-logBeta = betaRecursion(Y,Pi,P,W,C);
+mu = computeMu(W,states);
+Ptrans = computePtrans(P,states);
+gauss = computeGaussian(Y,mu,C);
+logAlpha = alphaRecursion(Y,Pi,Ptrans,states,gauss);
+logBeta = betaRecursion(Y,Pi,Ptrans,gauss);
+
+% Test gamma
 gamma = Gamma(logAlpha,logBeta);
 [~,temp] = max(gamma,[],2);
 figure(1); hold on;
