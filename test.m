@@ -29,9 +29,9 @@ title 'Most likely states according to the marginal probability'
 hold off;
 
 % Exact inference
-maxIter = 100;
+maxIter = 10;
 epsilon = 0.0001;
-[W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon);
+[W2,C2,P2,Pi2,LL] = em_fhmm(Y,K,M,maxIter,epsilon);
 figure(2);
 plot(1:length(LL),LL,'Linewidth',2);
 xlabel('Number of iteration','FontSize',18,'FontWeight','Bold');

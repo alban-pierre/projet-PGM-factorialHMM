@@ -45,7 +45,15 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
             sum2 = sum2 + reshape(temp(t,:),K*M,K*M);
         end
         
-        % \sum_{t=2}^T <S_t^m S_{t-1}^m>
+	% Computation of mu
+	mu = zeros(K^M,D);
+	for i=1:K^M
+            for m=1:M
+	         mu(i,:) = mu(i,:) + W(:,(m-1)*K+states(i,m))';
+	    end
+	end
+	
+	% \sum_{t=2}^T <S_t^m S_{t-1}^m>
         sum3 = zeros(M*K,K);
         P_y = zeros(K^M,1);
         for t = 1:T-1 
@@ -54,7 +62,7 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
             end
             for m = 1:M
                 temp = log(P((m-1)*K+1:m*K,:)) + ((logAlpha(t,:) * aux(:,(m-1)*K+1:m*K))' * ...
-                ((logBeta(t+1,:)+log(P_y')) * aux(:,(m-1)*K+1:m*K)));
+                       ((logBeta(t+1,:)+log(P_y')) * aux(:,(m-1)*K+1:m*K)));
                 sum3((m-1)*K+1:m*K,:) = sum3((m-1)*K+1:m*K,:) + temp/sum(sum(temp));        
             end  
         end
