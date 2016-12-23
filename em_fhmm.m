@@ -1,5 +1,3 @@
-%%% NOT FINISHED
-
 function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
     
     % Initialization
@@ -26,7 +24,7 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
     end
     
     for tau=1:maxIter
-        %%% E step
+        % E step
         logAlpha = alphaRecursion(Y,Pi,P,W,C);
         logBeta = betaRecursion(Y,Pi,P,W,C);
         gamma = Gamma(logAlpha,logBeta);
@@ -47,20 +45,30 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
             sum2 = sum2 + reshape(temp(t,:),K*M,K*M);
         end
         
+        % \sum_{t=2}^T <S_t^m S_{t-1}^m>
+        sum3 = zeros(M*K,K);
+        P_y = zeros(K^M,1);
+        for t = 1:T-1 
+            for i = 1:K^M
+                P_y(i) = mvnpdf(Y(:,t+1)',mu(i,:),C);
+            end
+            for m = 1:M
+                temp = log(P((m-1)*K+1:m*K,:)) + ((logAlpha(t,:) * aux(:,(m-1)*K+1:m*K))' * ...
+                ((logBeta(t+1,:)+log(P_y')) * aux(:,(m-1)*K+1:m*K)));
+                sum3((m-1)*K+1:m*K,:) = sum3((m-1)*K+1:m*K,:) + temp/sum(sum(temp));        
+            end  
+        end
+        
         % Log-likelihood
         ab = max(logAlpha(1,:) + logBeta(1,:),[],2);
         LL = [LL ab + log(sum(exp(logAlpha(1,:) + logBeta(1,:) - ab),2))];
         
         % M step
         Pi = reshape(ESt(1,:),[K,M])';
-        C = zeros(D);
-	for t=1:T
-	    C = C + Y(:,t)*Y(:,t)' - W*ESt(t,:)'*Y(:,t)';
-	end
-	C = C/T;
         W = sum1 * pinv(sum2);
-	
-	
+        C = Y*Y'/T - 1/T * sum1 * W';
+        C = (C+C')/2; % Make sure C is symmetric because of small computations errors
+        P = sum3 ./ sum(sum3,2);
         if (tau > 1) && (LL(end) - LL(end-1) < epsilon)
             break;
         end
