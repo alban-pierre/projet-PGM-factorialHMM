@@ -51,31 +51,18 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
             sum2 = sum2 + reshape(temp(t,:),K*M,K*M);
         end
         
-        % Computation of mu (en double cf 3e ligne du for)
-        mu = zeros(K^M,D);
-        for i=1:K^M
-            for m=1:M
-                mu(i,:) = mu(i,:) + W(:,(m-1)*K+states(i,m))';
-            end
-        end
-        
         % \sum_{t=2}^T <S_t^m S_{t-1}^m>
         sum3 = zeros(M*K,K);
-        P_y = zeros(K^M,1);^M
         for t = 1:T-1
-            for i = 1:K^Mx
-                P_y(i) = mvnpdf(Y(:,t+1)',mu(i,:),C);
-            end
-
             for m = 1:M
-                temp = log(P((m-1)*K+1:m*K,:)) + ((logAlpha(t,:) * aux(:,(m-1)*K+1:m*K))' * ...
-                          ((logBeta(t+1,:)+log(P_y')) * aux(:,(m-1)*K+1:m*K)));
-        
-                sum3((m-1)*K+1:m*K,:) = sum3((m-1)*K+1:m*K,:) + temp/sum(sum(temp));
-				% an exp is missing somewhere
-                %temp = log(P((m-1)*K+1:m*K,:)) + ((logAlpha(t,:) * aux(:,(m-1)*K+1:m*K))' + ...
-                 %      ((logBeta(t+1,:)+log(gauss(t+1,:))) * aux(:,(m-1)*K+1:m*K)));
-                %sum3((m-1)*K+1:m*K,:) = sum3((m-1)*K+1:m*K,:) + exp(temp/sum(sum(temp)));        
+            	a = max(logAlpha(t,:));
+                tempAlpha = a + log(exp(logAlpha(t,:)-a)*aux(:,(m-1)*K+1:m*K)); 
+                b = max(logBeta(t+1,:)+log(gauss(t+1,:)));
+                tempBeta = b + log(exp(logBeta(t+1,:)+log(gauss(t+1,:))-b)*aux(:,(m-1)*K+1:m*K)); 
+                temp = log(P((m-1)*K+1:m*K,:)) + (tempAlpha' + tempBeta);
+                c = max(temp(:));
+                tempSum = c + log(sum(exp(temp(:)-c))); 
+                sum3((m-1)*K+1:m*K,:) = sum3((m-1)*K+1:m*K,:) + exp(temp-tempSum);
             end  
         end
         
@@ -89,6 +76,7 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
         C = Y*Y'/T - 1/T * sum1 * W';
         C = (C+C')/2; % Make sure C is symmetric because of small computations errors
         P = sum3 ./ sum(sum3,2);
+	
         if (tau > 1) && (LL(end) - LL(end-1) < epsilon)
             break;
         end
