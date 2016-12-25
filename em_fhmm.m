@@ -48,7 +48,11 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
         sum2=zeros(K*M,K*M);
         temp=gamma*aux2;
         for t=1:T
-            sum2 = sum2 + reshape(temp(t,:),K*M,K*M);
+            temp1 = reshape(temp(t,:),K*M,K*M);
+            for m = 1:M
+                temp1((m-1)*K+1:m*K,(m-1)*K+1:m*K) = diag(ESt(t,(m-1)*K+1:m*K));
+            end
+            sum2 = sum2 + temp1;
         end
         
         % \sum_{t=2}^T <S_t^m S_{t-1}^m>
