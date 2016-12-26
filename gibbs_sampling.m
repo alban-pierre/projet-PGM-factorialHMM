@@ -1,4 +1,4 @@
-function [out1, out2, out3] = gibbs_sampling(Y, Pi, Ptrans, W, C, n_it)
+function [out1, out2, out3] = gibbs_sampling(Y, Pi, P, W, C, n_it)
 
     T = size(Y,2);
     [M,K] = size(Pi);
@@ -27,6 +27,7 @@ function [out1, out2, out3] = gibbs_sampling(Y, Pi, Ptrans, W, C, n_it)
                 mu = sum(W'.*repmat(sformu,1,D),1);
                 py(k,:) = mvnpdf(Y(:,t)',mu,C);
             end
+            % The following two lines are needed to avoid a p of the form [1, 10e-54]
             py = py./(10*max(max(py,1),[],1));
             py = 1./(-log(py));
             p = pa.*pb.*py;
