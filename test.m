@@ -36,3 +36,11 @@ plot(1:length(LL1),LL1,'Linewidth',2);
 xlabel('Number of iteration','FontSize',18,'FontWeight','Bold');
 ylabel('Log-likelihood','FontSize',18,'FontWeight','Bold');
 title('Log-likelihood as a function of iteration','FontSize',18,'FontWeight','Bold');
+
+% Completely factorized variational inference
+[W3,C3,P3,Pi3,LL3] = em_cfva(Y,K,M,maxIter,epsilon);
+figure(3);
+plot(2:length(LL3),LL3(2:end),'Linewidth',2);
+xlabel('Number of iteration','FontSize',18,'FontWeight','Bold');
+ylabel('Log-likelihood','FontSize',18,'FontWeight','Bold');
+title('Log-likelihood as a function of iteration','FontSize',18,'FontWeight','Bold');
