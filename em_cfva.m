@@ -10,8 +10,11 @@ function [W,C,P,Pi,LL] = em_cfva(Y,K,M,maxIter,epsilon)
     P = rand(M*K,K);
     P = P ./ sum(P,2);
     LL = [];
+    aLL = [];
     
     theta = ones(T,M*K) / K;
+    
+    states = get_all_states(M,K);
     
     for tau=1:maxIter        
         % E Step
@@ -24,10 +27,11 @@ function [W,C,P,Pi,LL] = em_cfva(Y,K,M,maxIter,epsilon)
                     pinv(C)*W(:,(m-1)*K+1:m*K));
             end
         
-            % Compute Ytilda
-            Ytilda = zeros(T,D*M);
+            thetaNew = zeros(T,M*K);
+            
             for t = 1:T
                 for m = 1:M
+                    % Compute Ytilda
                     ind = 1:M;
                     ind(m) = [];
                     temp = 0;
@@ -35,65 +39,65 @@ function [W,C,P,Pi,LL] = em_cfva(Y,K,M,maxIter,epsilon)
                         temp = temp + W(:,(l-1)*K+1:l*K) * ...
                             theta(t,(l-1)*K+1:l*K)';
                     end
-                    Ytilda(t,(m-1)*D+1:m*D) = Y(:,t) - temp;
+                    Ytilda = Y(:,t) - temp;
+                    
+                    % Compute thetaNew
+                    if t == 1
+                        thetaNew(1,(m-1)*K+1:m*K) = softmax(W(:,(m-1)*K+1:m*K)' * ...
+                            pinv(C) * Ytilda - 0.5 * Delta(:,m) + ...
+                            log(P((m-1)*K+1:m*K,:))' * theta(2,(m-1)*K+1:m*K)');
+                    elseif t == T
+                        thetaNew(T,(m-1)*K+1:m*K) = softmax(W(:,(m-1)*K+1:m*K)' * ...
+                            pinv(C) * Ytilda - 0.5 * Delta(:,m) + ...
+                            log(P((m-1)*K+1:m*K,:)) * theta(T-1,(m-1)*K+1:m*K)');
+                    else
+                        thetaNew(t,(m-1)*K+1:m*K) = softmax(W(:,(m-1)*K+1:m*K)' * ...
+                            pinv(C) * Ytilda - 0.5 * Delta(:,m) + ...
+                            log(P((m-1)*K+1:m*K,:)) * theta(t-1,(m-1)*K+1:m*K)' + ...
+                            log(P((m-1)*K+1:m*K,:))' * theta(t+1,(m-1)*K+1:m*K)');
+                    end
                 end
-            end
-        
-            % Compute theta
-            thetaNew = zeros(T,M*K);
-            % t = 1
-            for m = 1:M
-                thetaNew(1,(m-1)*K+1:m*K) = softmax(W(:,(m-1)*K+1:m*K)' * ...
-                    pinv(C) * Ytilda(1,(m-1)*D+1:m*D)' - 0.5 * Delta(:,m) + ...
-                    log(P((m-1)*K+1:m*K,:))' * theta(2,(m-1)*K+1:m*K)');
-            end
-        
-            for t = 2:T-1
-                for m = 1:M
-                    thetaNew(t,(m-1)*K+1:m*K) = softmax(W(:,(m-1)*K+1:m*K)' * ...
-                        pinv(C) * Ytilda(t,(m-1)*D+1:m*D)' - 0.5 * Delta(:,m) + ...
-                        log(P((m-1)*K+1:m*K,:)) * theta(t-1,(m-1)*K+1:m*K)' + ...
-                        log(P((m-1)*K+1:m*K,:))' * theta(t+1,(m-1)*K+1:m*K)');
-                end
-            end
-        
-            % t = T
-            for m = 1:M
-                thetaNew(T,(m-1)*K+1:m*K) = softmax(W(:,(m-1)*K+1:m*K)' * ...
-                    pinv(C) * Ytilda(1,(m-1)*D+1:m*D)' - 0.5 * Delta(:,m) + ...
-                    log(P((m-1)*K+1:m*K,:)) * theta(T-1,(m-1)*K+1:m*K)');
             end
             
             theta = thetaNew;
         end
         
-        % \sum_{t=1}^T Y_t <S_t>
-        sum1 = zeros(D,K*M);
-        for t = 1:T
+        sum1 = zeros(D,K*M); % \sum_{t=1}^T Y_t <S_t>
+        sum2 = zeros(K*M,K*M); % \sum_{t=1}^T <S_t^m S_t^n'>
+        sum3 = zeros(M*K,K); % \sum_{t=2}^T <S_t^m S_{t-1}^m>
+        for t = 1:T          
             sum1 = sum1 + Y(:,t) * theta(t,:);
-        end
-        
-        % \sum_{t=1}^T <S_t^m S_t^n'>
-        sum2 = zeros(K*M,K*M);
-        for t=1:T
+            
             temp = theta(t,:)' * theta(t,:);
             for m = 1:M
                 temp((m-1)*K+1:m*K,(m-1)*K+1:m*K) = diag(theta(t,(m-1)*K+1:m*K));
+                
+                if t < T
+                    sum3((m-1)*K+1:m*K,:) = sum3((m-1)*K+1:m*K,:) + ...
+                        theta(t,(m-1)*K+1:m*K)' * theta(t+1,(m-1)*K+1:m*K);           
+                end
             end
             sum2 = sum2 + temp;
         end
         
-        % \sum_{t=2}^T <S_t^m S_{t-1}^m>
-        sum3 = zeros(M*K,K);
-        for t = 1:T-1 
-            for m = 1:M
-                sum3((m-1)*K+1:m*K,:) = sum3((m-1)*K+1:m*K,:) + ...
-                    theta(t,(m-1)*K+1:m*K)' * theta(t+1,(m-1)*K+1:m*K);        
-            end  
-        end
+        % Approx log-likelihood
+        aLL = [aLL approx_loglikelihood(Y,theta,W,C,P,Pi)];
         
-        % Log-likelihood
-        % ...
+        % True log-likelihood
+        Ptrans = computePtrans(P,states);
+        mu = computeMu(W,states);
+        gauss = computeGaussian(Y,mu,C);
+        % Compute Pstates (t=1) for logAlpha1
+        Pstates = ones(1,K^M);
+        for i=1:K^M
+            for m=1:M
+                Pstates(i) = Pstates(i) * Pi(m,states(i,m));
+            end
+        end
+        logAlpha1 = log(Pstates) + log(gauss(1,:));
+        logBeta = betaRecursion(Y,Pi,Ptrans,gauss);
+        ab = max(logAlpha1 + logBeta(1,:),[],2);
+        LL = [LL ab + log(sum(exp(logAlpha1 + logBeta(1,:) - ab),2))];
         
         % M step
         Pi = reshape(theta(1,:),[K,M])';
@@ -103,5 +107,8 @@ function [W,C,P,Pi,LL] = em_cfva(Y,K,M,maxIter,epsilon)
         P = sum3 ./ sum(sum3,2);
         
         % Break if convergence
-        % ...
+        if (tau > 1) && (aLL(end) - aLL(end-1) < epsilon)
+            break;
+        end
     end
+end
