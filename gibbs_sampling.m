@@ -1,4 +1,4 @@
-function [out1, out2, out3] = gibbs_sampling(Y, Pi, P, W, C, n_it)
+function [out1, out2, out3, L, s] = gibbs_sampling(Y, Pi, P, W, C, n_it, s)
 
     T = size(Y,2);
     [M,K] = size(Pi);
@@ -7,10 +7,12 @@ function [out1, out2, out3] = gibbs_sampling(Y, Pi, P, W, C, n_it)
     out1 = zeros(M*K,T); % <S_t^m>
     out2 = zeros(M*K,M*K,T); % <S_t^m S_t^n>
     out3 = zeros(M*K,K,T-1); % <S_t^m S_{t-1}^m>
-    
-    s = zeros(M*K, T);
-    for t=1:T
-        s(:,t) = reshape(mnrnd(1,ones(M,K)/K)',M*K,1);
+
+    if (nargin < 7)
+        s = zeros(M*K, T);
+        for t=1:T
+            s(:,t) = reshape(mnrnd(1,ones(M,K)/K)',M*K,1);
+        end
     end
 
     
@@ -27,9 +29,11 @@ function [out1, out2, out3] = gibbs_sampling(Y, Pi, P, W, C, n_it)
                 mu = sum(W'.*repmat(sformu,1,D),1);
                 py(k,:) = mvnpdf(Y(:,t)',mu,C);
             end
-            % The following two lines are needed to avoid a p of the form [1, 10e-54]
-            py = py./(10*max(max(py,1),[],1));
-            py = 1./(-log(py));
+            % The following four lines are needed to avoid a p of the form [1, 10e-54]
+            if (it < n_it/2)
+                py = py./(10*max(max(py,1),[],1));
+                py = 1./(-log(py));
+            end
             p = pa.*pb.*py;
             p = p'/sum(p,1);
             s((m-1)*K+1:m*K,t) = mnrnd(1,p)';
@@ -47,8 +51,10 @@ function [out1, out2, out3] = gibbs_sampling(Y, Pi, P, W, C, n_it)
                     mu = sum(W'.*repmat(sformu,1,D),1);
                     py(k,:) = mvnpdf(Y(:,t)',mu,C);
                 end
-                py = py./(10*max(max(py,1),[],1));
-                py = 1./(-log(py));
+                if (it < n_it/2)
+                    py = py./(10*max(max(py,1),[],1));
+                    py = 1./(-log(py));
+                end
                 p = pa.*pb.*py;
                 p = p'/sum(p,1);
                 s((m-1)*K+1:m*K,t) = mnrnd(1,p)';
@@ -67,8 +73,10 @@ function [out1, out2, out3] = gibbs_sampling(Y, Pi, P, W, C, n_it)
                 mu = sum(W'.*repmat(sformu,1,D),1);
                 py(k,:) = mvnpdf(Y(:,t)',mu,C);
             end
-            py = py./(10*max(max(py,1),[],1));
-            py = 1./(-log(py));
+            if (it < n_it/2)
+                py = py./(10*max(max(py,1),[],1));
+                py = 1./(-log(py));
+            end
             p = pa.*pb.*py;
             p = p'/sum(p,1);
             s((m-1)*K+1:m*K,t) = mnrnd(1,p)';
@@ -86,4 +94,10 @@ function [out1, out2, out3] = gibbs_sampling(Y, Pi, P, W, C, n_it)
     out1 = out1 ./ n_it;
     out2 = out2 ./ n_it;
     out3 = out3 ./ n_it;
+
+    L = 0;
+    for t=1:T
+        mu = sum(W'.*repmat(s(:,t),1,D),1);
+        L = L + log(mvnpdf(Y(:,t)',mu,C));
+    end
 end
