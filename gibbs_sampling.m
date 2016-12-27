@@ -1,4 +1,4 @@
-function [out1, out2, out3, L, s] = gibbs_sampling(Y, Pi, P, W, C, n_it, s)
+function [out1, out2, out3, s] = gibbs_sampling(Y, Pi, P, W, C, n_it, s)
 
     T = size(Y,2);
     [M,K] = size(Pi);
@@ -15,8 +15,12 @@ function [out1, out2, out3, L, s] = gibbs_sampling(Y, Pi, P, W, C, n_it, s)
         end
     end
 
+    % sacrificed iterations for burn-in
+    burn_in     = 1000;
+    % consecutive samples are not independent e.g. use every 100th sample for estimation
+    step_sample = 100;
     
-    for it=1:n_it
+    for it=1:(burn_in + (n_it * step_sample))
         
         %first node
         t = 1;
@@ -82,22 +86,29 @@ function [out1, out2, out3, L, s] = gibbs_sampling(Y, Pi, P, W, C, n_it, s)
             s((m-1)*K+1:m*K,t) = mnrnd(1,p)';
         end
 
-        out1 = out1 + s;
-        for t=1:T;
-            out2(:,:,t) = out2(:,:,t) + repmat(s(:,t),1,K*M).*repmat(s(:,t),1,K*M)';
+        if it > burn_in
+            if mod(it,step_sample) == 0
+                out1 = out1 + s;
+                for t=1:T;
+                    out2(:,:,t) = out2(:,:,t) + repmat(s(:,t),1,K*M).*repmat(s(:,t),1,K*M)';
+                    
+                    if t < T
+                        out3(:,:,t) = out3(:,:,t) + repmat(s(:,t+1), 1,K) .* ...
+                            reshape(repmat(reshape(s(:,t),K,M)',1,K)',K,K*M)';
+                    end
+                end
+            end
         end
-        for t=1:T-1
-            out3(:,:,t) = out3(:,:,t) + repmat(s(:,t+1), 1,K) .* reshape(repmat(reshape(s(:,t),K,M)',1,K)',K,K*M)';
-        end
-        
     end
+    
     out1 = out1 ./ n_it;
     out2 = out2 ./ n_it;
     out3 = out3 ./ n_it;
 
-    L = 0;
-    for t=1:T
-        mu = sum(W'.*repmat(s(:,t),1,D),1);
-        L = L + log(mvnpdf(Y(:,t)',mu,C));
-    end
+    % Wrong loglikelihood: (Y_t) are not independant
+    %L = 0;
+    %for t=1:T
+    %    mu = sum(W'.*repmat(s(:,t),1,D),1);
+    %    L = L + log(mvnpdf(Y(:,t)',mu,C));
+    %end
 end
