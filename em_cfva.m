@@ -84,7 +84,7 @@ function [W,C,P,Pi,LL] = em_cfva(Y,K,M,maxIter,epsilon)
         end
         
         % Approx log-likelihood
-        aLL = [aLL approx_loglikelihood(Y,theta,W,invC,P,Pi)];
+        aLL = [aLL approx_loglikelihood_cfva(Y,theta,W,invC,P,Pi)];
         % Not sure if I'm using the right loglikelihood
         
         % True log-likelihood

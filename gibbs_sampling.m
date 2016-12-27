@@ -44,6 +44,8 @@ function [out1, out2, out3, s] = gibbs_sampling(Y, Pi, P, W, C, n_it, s)
                     mu = sum(W'.*repmat(sformu,1,D),1);
                     py(k,:) = mvnpdf(Y(:,t)',mu,C);
                 end
+                % The following four lines avoid probabilities like p = [1, 10e-54], but there
+                % must be a better way to do this
                 if (it < burn_in/2)
                     py = py./(10*max(max(py,1),[],1));
                     py = 1./(-log(py));
