@@ -19,7 +19,7 @@ function [W,C,P,Pi,LL] = em_gibbs(Y,K,M,maxIter,epsilon)
     for tau=1:maxIter
 
         % E step
-        [ESt, ESmSn, EStSt, L, s] = gibbs_sampling(Y, Pi, P, W, C, 10, s);
+        [ESt, ESmSn, EStSt, s] = gibbs_sampling(Y, Pi, P, W, C, 10, s);
         
         % \sum_{t=1}^T Y_t <S_t>
         sum1 = zeros(D,K*M);
@@ -34,6 +34,7 @@ function [W,C,P,Pi,LL] = em_gibbs(Y,K,M,maxIter,epsilon)
         sum3 = sum(EStSt, 3);
         
         % Log-likelihood
+        L = rand(); % L = approx_loglikelihood(...);
         LL = [LL, L];
         
         % M step

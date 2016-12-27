@@ -8,6 +8,7 @@ function [out1, out2, out3, s] = gibbs_sampling(Y, Pi, P, W, C, n_it, s)
     out2 = zeros(M*K,M*K,T); % <S_t^m S_t^n>
     out3 = zeros(M*K,K,T-1); % <S_t^m S_{t-1}^m>
 
+    % If possible we reuse the last sampling
     if (nargin < 7)
         s = zeros(M*K, T);
         for t=1:T
@@ -17,9 +18,9 @@ function [out1, out2, out3, s] = gibbs_sampling(Y, Pi, P, W, C, n_it, s)
 
     % They don't burn iterations in their experimentation, so you can delete it if you want
     % sacrificed iterations for burn-in
-    burn_in     = 1000;
+    burn_in     = 5;
     % consecutive samples are not independent e.g. use every 100th sample for estimation
-    step_sample = 100;
+    step_sample = 5;
     
     for it=1:(burn_in + (n_it * step_sample))
         
@@ -35,13 +36,14 @@ function [out1, out2, out3, s] = gibbs_sampling(Y, Pi, P, W, C, n_it, s)
                 py(k,:) = mvnpdf(Y(:,t)',mu,C);
             end
             % The following four lines are needed to avoid a p of the form [1, 10e-54]
-            if (it < n_it/2)
+            if (it < burn_in/2)
                 py = py./(10*max(max(py,1),[],1));
                 py = 1./(-log(py));
             end
             p = pa.*pb.*py;
             p = p'/sum(p,1);
             s((m-1)*K+1:m*K,t) = mnrnd(1,p)';
+            assert(sum(s((m-1)*K+1:m*K,t)) == 1);
         end
         
         %nodes in the middle
@@ -56,13 +58,14 @@ function [out1, out2, out3, s] = gibbs_sampling(Y, Pi, P, W, C, n_it, s)
                     mu = sum(W'.*repmat(sformu,1,D),1);
                     py(k,:) = mvnpdf(Y(:,t)',mu,C);
                 end
-                if (it < n_it/2)
+                if (it < burn_in/2)
                     py = py./(10*max(max(py,1),[],1));
                     py = 1./(-log(py));
                 end
                 p = pa.*pb.*py;
                 p = p'/sum(p,1);
                 s((m-1)*K+1:m*K,t) = mnrnd(1,p)';
+                assert(sum(s((m-1)*K+1:m*K,t)) == 1);
             end
         end
         
@@ -78,19 +81,20 @@ function [out1, out2, out3, s] = gibbs_sampling(Y, Pi, P, W, C, n_it, s)
                 mu = sum(W'.*repmat(sformu,1,D),1);
                 py(k,:) = mvnpdf(Y(:,t)',mu,C);
             end
-            if (it < n_it/2)
+            if (it < burn_in/2)
                 py = py./(10*max(max(py,1),[],1));
                 py = 1./(-log(py));
             end
             p = pa.*pb.*py;
             p = p'/sum(p,1);
             s((m-1)*K+1:m*K,t) = mnrnd(1,p)';
+            assert(sum(s((m-1)*K+1:m*K,t)) == 1);
         end
 
         if it > burn_in
             if mod(it,step_sample) == 0
                 out1 = out1 + s;
-                for t=1:T;
+                for t=1:T
                     out2(:,:,t) = out2(:,:,t) + repmat(s(:,t),1,K*M).*repmat(s(:,t),1,K*M)';
                     
                     if t < T
@@ -107,6 +111,7 @@ function [out1, out2, out3, s] = gibbs_sampling(Y, Pi, P, W, C, n_it, s)
     out3 = out3 ./ n_it;
 
     % Wrong loglikelihood: (Y_t) are not independant
+    % Indeed I will use your function approx_loglikelihood 
     %L = 0;
     %for t=1:T
     %    mu = sum(W'.*repmat(s(:,t),1,D),1);
