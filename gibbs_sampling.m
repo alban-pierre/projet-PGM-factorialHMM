@@ -19,39 +19,25 @@ function [out1, out2, out3, s] = gibbs_sampling(Y, Pi, P, W, C, n_it, s)
     % They don't burn iterations in their experimentation, so you can delete it if you want
     % sacrificed iterations for burn-in
     burn_in     = 5;
-    % consecutive samples are not independent e.g. use every 100th sample for estimation
+% consecutive samples are not independent e.g. use every 100th sample for estimation
     step_sample = 5;
     
     for it=1:(burn_in + (n_it * step_sample))
         
-        %first node
-        t = 1;
-        for m=1:M
-            pa = P((m-1)*K+1:m*K,s((m-1)*K+1:m*K,t+1)'>0.5);
-            pb = ones(K,1);
-            sformu = s(:,t);
-            for k=1:K
-                sformu((m-1)*K+1:m*K,1) = (1:K==k)';
-                mu = sum(W'.*repmat(sformu,1,D),1);
-                py(k,:) = mvnpdf(Y(:,t)',mu,C);
-            end
-            % The following four lines are needed to avoid a p of the form [1, 10e-54]
-            if (it < burn_in/2)
-                py = py./(10*max(max(py,1),[],1));
-                py = 1./(-log(py));
-            end
-            p = pa.*pb.*py;
-            p = p'/sum(p,1);
-            s((m-1)*K+1:m*K,t) = mnrnd(1,p)';
-            assert(sum(s((m-1)*K+1:m*K,t)) == 1);
-        end
-        
-        %nodes in the middle
-        for t = 2:T-1
+        for t = 1:T
             for m=1:M
-                pa = P((m-1)*K+1:m*K,s((m-1)*K+1:m*K,t+1)'>0.5);
-                pb = P((m-1)*K+1:m*K,:);
-                pb = pb(s((m-1)*K+1:m*K, t-1)>0.5, :)';
+                if t == 1
+                    pa = P((m-1)*K+1:m*K,s((m-1)*K+1:m*K,t+1)'>0.5);
+                    pb = Pi(m,:)';
+                elseif t == T
+                    pa = ones(K,1);
+                    pb = P((m-1)*K+1:m*K,:);
+                    pb = pb(s((m-1)*K+1:m*K, t-1)>0.5, :)';
+                else
+                    pa = P((m-1)*K+1:m*K,s((m-1)*K+1:m*K,t+1)'>0.5);
+                    pb = P((m-1)*K+1:m*K,:);
+                    pb = pb(s((m-1)*K+1:m*K, t-1)>0.5, :)';
+                end
                 sformu = s(:,t);
                 for k=1:K
                     sformu((m-1)*K+1:m*K,1) = (1:K==k)';
@@ -69,28 +55,6 @@ function [out1, out2, out3, s] = gibbs_sampling(Y, Pi, P, W, C, n_it, s)
             end
         end
         
-        %last node
-        t = T;
-        for m=1:M
-            pa = ones(K,1);
-            pb = P((m-1)*K+1:m*K,:);
-            pb = pb(s((m-1)*K+1:m*K, t-1)>0.5, :)';
-            sformu = s(:,t);
-            for k=1:K
-                sformu((m-1)*K+1:m*K,1) = (1:K==k)';
-                mu = sum(W'.*repmat(sformu,1,D),1);
-                py(k,:) = mvnpdf(Y(:,t)',mu,C);
-            end
-            if (it < burn_in/2)
-                py = py./(10*max(max(py,1),[],1));
-                py = 1./(-log(py));
-            end
-            p = pa.*pb.*py;
-            p = p'/sum(p,1);
-            s((m-1)*K+1:m*K,t) = mnrnd(1,p)';
-            assert(sum(s((m-1)*K+1:m*K,t)) == 1);
-        end
-
         if it > burn_in
             if mod(it,step_sample) == 0
                 out1 = out1 + s;
@@ -111,7 +75,7 @@ function [out1, out2, out3, s] = gibbs_sampling(Y, Pi, P, W, C, n_it, s)
     out3 = out3 ./ n_it;
 
     % Wrong loglikelihood: (Y_t) are not independant
-    % Indeed I will use your function approx_loglikelihood 
+    % Indeed I will use your function approx_loglikelihood adapted
     %L = 0;
     %for t=1:T
     %    mu = sum(W'.*repmat(s(:,t),1,D),1);
