@@ -18,13 +18,16 @@ function [W,C,P,Pi,LL] = em_cfva(Y,K,M,maxIter,epsilon)
     
     for tau=1:maxIter        
         % E Step
+        
+        invC = pinv(C);
+        
         % Computation of theta
         for i = 1:10 % For convergence of KL divergence
             % Compute Delta
             Delta = zeros(K,M);
             for m = 1:M
                 Delta(:,m) = diag(W(:,(m-1)*K+1:m*K)' * ...
-                    pinv(C)*W(:,(m-1)*K+1:m*K));
+                    invC * W(:,(m-1)*K+1:m*K));
             end
         
             thetaNew = zeros(T,M*K);
@@ -44,15 +47,15 @@ function [W,C,P,Pi,LL] = em_cfva(Y,K,M,maxIter,epsilon)
                     % Compute thetaNew
                     if t == 1
                         thetaNew(1,(m-1)*K+1:m*K) = softmax(W(:,(m-1)*K+1:m*K)' * ...
-                            pinv(C) * Ytilda - 0.5 * Delta(:,m) + ...
+                            invC * Ytilda - 0.5 * Delta(:,m) + ...
                             log(P((m-1)*K+1:m*K,:))' * theta(2,(m-1)*K+1:m*K)');
                     elseif t == T
                         thetaNew(T,(m-1)*K+1:m*K) = softmax(W(:,(m-1)*K+1:m*K)' * ...
-                            pinv(C) * Ytilda - 0.5 * Delta(:,m) + ...
+                            invC * Ytilda - 0.5 * Delta(:,m) + ...
                             log(P((m-1)*K+1:m*K,:)) * theta(T-1,(m-1)*K+1:m*K)');
                     else
                         thetaNew(t,(m-1)*K+1:m*K) = softmax(W(:,(m-1)*K+1:m*K)' * ...
-                            pinv(C) * Ytilda - 0.5 * Delta(:,m) + ...
+                            invC * Ytilda - 0.5 * Delta(:,m) + ...
                             log(P((m-1)*K+1:m*K,:)) * theta(t-1,(m-1)*K+1:m*K)' + ...
                             log(P((m-1)*K+1:m*K,:))' * theta(t+1,(m-1)*K+1:m*K)');
                     end
@@ -81,7 +84,7 @@ function [W,C,P,Pi,LL] = em_cfva(Y,K,M,maxIter,epsilon)
         end
         
         % Approx log-likelihood
-        aLL = [aLL approx_loglikelihood(Y,theta,W,C,P,Pi)];
+        aLL = [aLL approx_loglikelihood(Y,theta,W,invC,P,Pi)];
         
         % True log-likelihood
         Ptrans = computePtrans(P,states);
