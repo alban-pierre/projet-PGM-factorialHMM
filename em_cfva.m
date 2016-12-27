@@ -47,7 +47,7 @@ function [W,C,P,Pi,LL] = em_cfva(Y,K,M,maxIter,epsilon)
                     % Compute thetaNew
                     if t == 1
                         thetaNew(1,(m-1)*K+1:m*K) = softmax(W(:,(m-1)*K+1:m*K)' * ...
-                            invC * Ytilda - 0.5 * Delta(:,m) + ...
+                            invC * Ytilda - 0.5 * Delta(:,m) + log(Pi(m,:))' + ...
                             log(P((m-1)*K+1:m*K,:))' * theta(2,(m-1)*K+1:m*K)');
                     elseif t == T
                         thetaNew(T,(m-1)*K+1:m*K) = softmax(W(:,(m-1)*K+1:m*K)' * ...
@@ -85,6 +85,7 @@ function [W,C,P,Pi,LL] = em_cfva(Y,K,M,maxIter,epsilon)
         
         % Approx log-likelihood
         aLL = [aLL approx_loglikelihood(Y,theta,W,invC,P,Pi)];
+        % Not sure if I'm using the right loglikelihood
         
         % True log-likelihood
         Ptrans = computePtrans(P,states);
