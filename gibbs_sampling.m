@@ -15,6 +15,7 @@ function [out1, out2, out3, s] = gibbs_sampling(Y, Pi, P, W, C, n_it, s)
         end
     end
 
+    % They don't burn iterations in their experimentation, so you can delete it if you want
     % sacrificed iterations for burn-in
     burn_in     = 1000;
     % consecutive samples are not independent e.g. use every 100th sample for estimation
