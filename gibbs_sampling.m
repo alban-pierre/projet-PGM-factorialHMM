@@ -19,7 +19,7 @@ function [out1, out2, out3, s] = gibbs_sampling(Y, Pi, P, W, C, n_it, s)
     % They don't burn iterations in their experimentation, so you can delete it if you want
     % sacrificed iterations for burn-in
     burn_in     = 5;
-% consecutive samples are not independent e.g. use every 100th sample for estimation
+    % consecutive samples are not independent e.g. use every 100th sample for estimation
     step_sample = 5;
     
     for it=1:(burn_in + (n_it * step_sample))
@@ -76,11 +76,4 @@ function [out1, out2, out3, s] = gibbs_sampling(Y, Pi, P, W, C, n_it, s)
     out2 = out2 ./ n_it;
     out3 = out3 ./ n_it;
 
-    % Wrong loglikelihood: (Y_t) are not independant
-    % Indeed I will use your function approx_loglikelihood adapted
-    %L = 0;
-    %for t=1:T
-    %    mu = sum(W'.*repmat(s(:,t),1,D),1);
-    %    L = L + log(mvnpdf(Y(:,t)',mu,C));
-    %end
 end

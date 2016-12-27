@@ -34,7 +34,8 @@ function [W,C,P,Pi,LL] = em_gibbs(Y,K,M,maxIter,epsilon)
         sum3 = sum(EStSt, 3);
         
         % Log-likelihood
-        L = rand(); % L = approx_loglikelihood(...);
+        invC = pinv(C);
+        L = approx_loglikelihood(ESt,ESmSn,EStSt,Y,W,invC,P,Pi);
         LL = [LL, L];
         
         % M step
