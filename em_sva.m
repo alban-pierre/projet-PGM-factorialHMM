@@ -17,6 +17,7 @@ function [W,C,P,Pi,LL] = em_sva(Y,K,M,maxIter,epsilon)
     h = ones(T,M*K);
     
     states = get_all_states(M,K);
+    states1 = get_all_states(1,K);
     
     for tau=1:maxIter        
         % E Step
@@ -61,7 +62,7 @@ function [W,C,P,Pi,LL] = em_sva(Y,K,M,maxIter,epsilon)
         logBeta = zeros(T,K,M);
         gamma = zeros(T,K,M);
         for m=1:M
-            logAlpha(:,:,m) = alphaRecursion(Pi(m,:),P((m-1)*K+1:m*K,:),states,h(:,(m-1)*K+1:m*K));
+            logAlpha(:,:,m) = alphaRecursion(Pi(m,:),P((m-1)*K+1:m*K,:),states1,h(:,(m-1)*K+1:m*K));
             logBeta(:,:,m) = betaRecursion(Pi(m,:),P((m-1)*K+1:m*K,:),h(:,(m-1)*K+1:m*K));
             gamma(:,:,m) = Gamma(logAlpha(:,:,m),logBeta(:,:,m));
         end
@@ -88,7 +89,6 @@ function [W,C,P,Pi,LL] = em_sva(Y,K,M,maxIter,epsilon)
         
         % Approx log-likelihood
         aLL = [aLL approx_loglikelihood_cfva(Y,ESt,W,invC,P,Pi)];
-        % Not sure if I'm using the right loglikelihood
         
         % True log-likelihood
         Ptrans = computePtrans(P,states);
