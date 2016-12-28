@@ -13,10 +13,9 @@ function [W,C,P,Pi,LL] = em_sva(Y,K,M,maxIter,epsilon)
     aLL = [];
 
     ESt = zeros(T,M*K);
-    h = ones(T,M*K);
     
     states = get_all_states(M,K);
-    states1 = get_all_states(1,K);
+    states1 = (1:K)'; % get_all_states(1,K);
     
     for tau=1:maxIter        
         % E Step
@@ -32,7 +31,7 @@ function [W,C,P,Pi,LL] = em_sva(Y,K,M,maxIter,epsilon)
                     invC * W(:,(m-1)*K+1:m*K));
             end
         
-            hNew = zeros(T,M*K);
+            h = zeros(T,M*K);
             
             for t = 1:T
                 for m = 1:M
@@ -46,13 +45,11 @@ function [W,C,P,Pi,LL] = em_sva(Y,K,M,maxIter,epsilon)
                     end
                     Ytilda = Y(:,t) - temp;
                     
-                    % Compute hNew
-                    hNew(t,(m-1)*K+1:m*K) = exp(W(:,(m-1)*K+1:m*K)' * ...
+                    % Compute h
+                    h(t,(m-1)*K+1:m*K) = exp(W(:,(m-1)*K+1:m*K)' * ...
                         invC * Ytilda - 0.5 * Delta(:,m));
                 end
             end
-            
-            h = hNew;
         end
 
         % Alpha/Beta recursions on each HMM
