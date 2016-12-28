@@ -56,3 +56,11 @@ plot(2:length(LL3),LL3(2:end),'Linewidth',2);
 xlabel('Number of iteration','FontSize',18,'FontWeight','Bold');
 ylabel('Log-likelihood','FontSize',18,'FontWeight','Bold');
 title('Log-likelihood as a function of iteration','FontSize',18,'FontWeight','Bold');
+
+% Structured variational inference
+[W4,C4,P4,Pi4,LL4] = em_cfva(Y,K,M,maxIter,epsilon);
+figure(4);
+plot(2:length(LL4),LL4(2:end),'Linewidth',2);
+xlabel('Number of iteration','FontSize',18,'FontWeight','Bold');
+ylabel('Log-likelihood','FontSize',18,'FontWeight','Bold');
+title('Log-likelihood as a function of iteration','FontSize',18,'FontWeight','Bold');
