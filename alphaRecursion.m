@@ -1,4 +1,6 @@
-function logAlpha = alphaRecursion(Pi,Ptrans,gauss)
+% It's better to pass states as argument, it can be a huge matrix
+
+function logAlpha = alphaRecursion(Pi,Ptrans,states,gauss)
     
     %T = size(Y,2);
     T = size(gauss,1);
@@ -6,8 +8,7 @@ function logAlpha = alphaRecursion(Pi,Ptrans,gauss)
     logAlpha = zeros(T,K^M);
     Pstates = ones(1,K^M);
     
-    % Compute Pstates
-    states = get_all_states(M,K);
+    % Compute Pstates (t=1)
     for i=1:K^M
         for m=1:M
             Pstates(i) = Pstates(i) * Pi(m,states(i,m));
