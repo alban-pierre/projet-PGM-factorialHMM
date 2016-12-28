@@ -13,8 +13,8 @@ states = get_all_states(M,K);
 mu = computeMu(W,states);
 Ptrans = computePtrans(P,states);
 gauss = computeGaussian(Y,mu,C);
-logAlpha = alphaRecursion(Y,Pi,Ptrans,states,gauss);
-logBeta = betaRecursion(Y,Pi,Ptrans,gauss);
+logAlpha = alphaRecursion(Pi,Ptrans,states,gauss);
+logBeta = betaRecursion(Pi,Ptrans,gauss);
 
 % Test gamma
 gamma = Gamma(logAlpha,logBeta);
