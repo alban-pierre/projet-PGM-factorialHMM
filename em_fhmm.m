@@ -31,6 +31,9 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
         gauss = computeGaussian(Y,mu,C);
     
         % E step
+        % Here we use alpha and beta recursions of an HMM of K^M states, and not
+        % recursions of a factorial HMM (described in appendix B, equations B.1-4)
+        % It gave the same results but it is slower for big values of K,M
         logAlpha = alphaRecursion(Y,Pi,Ptrans,states,gauss);
         logBeta = betaRecursion(Y,Pi,Ptrans,gauss);
         gamma = Gamma(logAlpha,logBeta);
@@ -59,7 +62,7 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
         sum3 = zeros(M*K,K);
         for t = 1:T-1
             for m = 1:M
-            	a = max(logAlpha(t,:));
+                a = max(logAlpha(t,:));
                 tempAlpha = a + log(exp(logAlpha(t,:)-a)*aux(:,(m-1)*K+1:m*K)); 
                 b = max(logBeta(t+1,:)+log(gauss(t+1,:)));
                 tempBeta = b + log(exp(logBeta(t+1,:)+log(gauss(t+1,:))-b)*aux(:,(m-1)*K+1:m*K)); 
@@ -80,7 +83,7 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
         C = Y*Y'/T - 1/T * sum1 * W';
         C = (C+C')/2; % Make sure C is symmetric because of small computations errors
         P = sum3 ./ sum(sum3,2);
-	
+    
         if (tau > 1) && (LL(end) - LL(end-1) < epsilon)
             break;
         end
