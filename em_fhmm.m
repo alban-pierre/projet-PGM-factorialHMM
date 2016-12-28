@@ -34,7 +34,10 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
         % Here we use alpha and beta recursions of an HMM of K^M states, and not
         % recursions of a factorial HMM (described in appendix B, equations B.1-4)
         % It gave the same results but it is slower for big values of K,M
-        logAlpha = alphaRecursion(Pi,Ptrans,gauss);
+            % It's the same thing ?
+            % We do not know (S_t), so we have to do the calculations for all
+            % states possible as we do exact inference
+        logAlpha = alphaRecursion(Pi,Ptrans,states,gauss);
         logBeta = betaRecursion(Pi,Ptrans,gauss);
         gamma = Gamma(logAlpha,logBeta);
         
