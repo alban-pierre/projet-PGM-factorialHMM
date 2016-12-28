@@ -13,7 +13,6 @@ function [W,C,P,Pi,LL] = em_sva(Y,K,M,maxIter,epsilon)
     aLL = [];
 
     ESt = zeros(T,M*K);
-    Q = ones(T,M*K)/K;
     h = ones(T,M*K);
     
     states = get_all_states(M,K);
@@ -33,7 +32,6 @@ function [W,C,P,Pi,LL] = em_sva(Y,K,M,maxIter,epsilon)
                     invC * W(:,(m-1)*K+1:m*K));
             end
         
-            QNew = zeros(T,M*K);
             hNew = zeros(T,M*K);
             
             for t = 1:T
