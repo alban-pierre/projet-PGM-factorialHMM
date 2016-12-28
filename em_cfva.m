@@ -99,7 +99,7 @@ function [W,C,P,Pi,LL] = em_cfva(Y,K,M,maxIter,epsilon)
             end
         end
         logAlpha1 = log(Pstates) + log(gauss(1,:));
-        logBeta = betaRecursion(Y,Pi,Ptrans,gauss);
+        logBeta = betaRecursion(Pi,Ptrans,gauss);
         ab = max(logAlpha1 + logBeta(1,:),[],2);
         LL = [LL ab + log(sum(exp(logAlpha1 + logBeta(1,:) - ab),2))];
         
