@@ -62,3 +62,11 @@ plot(2:length(LL4),LL4(2:end),'Linewidth',2);
 xlabel('Number of iteration','FontSize',18,'FontWeight','Bold');
 ylabel('Log-likelihood','FontSize',18,'FontWeight','Bold');
 title('Log-likelihood as a function of iteration','FontSize',18,'FontWeight','Bold');
+
+% Test generalization
+ll = loglikelihood(Ytest,W,C,P,Pi);
+ll1 = loglikelihood(Ytest,W1,C1,P1,Pi1);
+ll2 = loglikelihood(Ytest,W2,C2,P2,Pi2);
+ll3 = loglikelihood(Ytest,W3,C3,P3,Pi3);
+ll4 = loglikelihood(Ytest,W4,C4,P4,Pi4);
+
