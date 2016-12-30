@@ -34,33 +34,39 @@ epsilon = 1e-5;
 % Exact inference
 [W1,C1,P1,Pi1,LL1] = em_fhmm(Y,K,M,maxIter,epsilon);
 figure(2);
-plot(1:length(LL1),LL1,'Linewidth',2);
+plot(2:length(LL1),LL1(2:end),'Linewidth',2);
 xlabel('Number of iteration','FontSize',18,'FontWeight','Bold');
 ylabel('Log-likelihood','FontSize',18,'FontWeight','Bold');
 title('Log-likelihood as a function of iteration','FontSize',18,'FontWeight','Bold');
 
 % Gibbs sampling inference
-if (false) % Does not work yet
 [W2,C2,P2,Pi2,LL2] = em_gibbs(Y,K,M,maxIter,epsilon);
-figure(2);
+figure(3);
 plot(2:length(LL2),LL2(2:end),'Linewidth',2);
 xlabel('Number of iteration','FontSize',18,'FontWeight','Bold');
 ylabel('Log-likelihood','FontSize',18,'FontWeight','Bold');
 title('Log-likelihood as a function of iteration','FontSize',18,'FontWeight','Bold');
-end
 
 % Completely factorized variational inference
 [W3,C3,P3,Pi3,LL3] = em_cfva(Y,K,M,maxIter,epsilon);
-figure(3);
+figure(4);
 plot(2:length(LL3),LL3(2:end),'Linewidth',2);
 xlabel('Number of iteration','FontSize',18,'FontWeight','Bold');
 ylabel('Log-likelihood','FontSize',18,'FontWeight','Bold');
 title('Log-likelihood as a function of iteration','FontSize',18,'FontWeight','Bold');
 
 % Structured variational inference
-[W4,C4,P4,Pi4,LL4] = em_cfva(Y,K,M,maxIter,epsilon);
-figure(4);
+[W4,C4,P4,Pi4,LL4] = em_sva(Y,K,M,maxIter,epsilon);
+figure(5);
 plot(2:length(LL4),LL4(2:end),'Linewidth',2);
 xlabel('Number of iteration','FontSize',18,'FontWeight','Bold');
 ylabel('Log-likelihood','FontSize',18,'FontWeight','Bold');
 title('Log-likelihood as a function of iteration','FontSize',18,'FontWeight','Bold');
+
+% Test generalization
+ll = loglikelihood(Ytest,W,C,P,Pi);
+ll1 = loglikelihood(Ytest,W1,C1,P1,Pi1);
+ll2 = loglikelihood(Ytest,W2,C2,P2,Pi2);
+ll3 = loglikelihood(Ytest,W3,C3,P3,Pi3);
+ll4 = loglikelihood(Ytest,W4,C4,P4,Pi4);
+

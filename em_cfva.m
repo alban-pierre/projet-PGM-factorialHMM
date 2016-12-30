@@ -88,20 +88,7 @@ function [W,C,P,Pi,LL] = em_cfva(Y,K,M,maxIter,epsilon)
         % Not sure if I'm using the right loglikelihood
         
         % True log-likelihood
-        Ptrans = computePtrans(P,states);
-        mu = computeMu(W,states);
-        gauss = computeGaussian(Y,mu,C);
-        % Compute Pstates (t=1) for logAlpha1
-        Pstates = ones(1,K^M);
-        for i=1:K^M
-            for m=1:M
-                Pstates(i) = Pstates(i) * Pi(m,states(i,m));
-            end
-        end
-        logAlpha1 = log(Pstates) + log(gauss(1,:));
-        logBeta = betaRecursion(Pi,Ptrans,gauss);
-        ab = max(logAlpha1 + logBeta(1,:),[],2);
-        LL = [LL ab + log(sum(exp(logAlpha1 + logBeta(1,:) - ab),2))];
+        LL = [LL , loglikelihood(Y,W,C,P,Pi,states)];
         
         % M step
         Pi = reshape(theta(1,:),[K,M])';

@@ -8,6 +8,8 @@ function [W,C,P,Pi,LL] = em_gibbs(Y,K,M,maxIter,epsilon)
     P = rand(M*K,K);
     P = P ./ sum(P,2);
     LL = [];
+    aLL = [];
+    states = get_all_states(M,K);
     
     %initialisation of gibbs_sampling
     s = zeros(M*K, T);
@@ -33,10 +35,12 @@ function [W,C,P,Pi,LL] = em_gibbs(Y,K,M,maxIter,epsilon)
         % \sum_{t=2}^T <S_t^m S_{t-1}^m>
         sum3 = sum(EStSt, 3);
         
-        % Log-likelihood
+        % Approx log-likelihood
         invC = pinv(C);
-        L = approx_loglikelihood(ESt,ESmSn,EStSt,Y,W,invC,P,Pi);
-        LL = [LL, L];
+        aLL = [aLL, approx_loglikelihood_gibbs(ESt,ESmSn,EStSt,Y,W,invC,P,Pi)];
+        
+        % True log-likelihood
+        LL = [LL , loglikelihood(Y,W,C,P,Pi,states)];
         
         % M step
         Pi = reshape(ESt(:,1)',[K,M])';
@@ -45,7 +49,7 @@ function [W,C,P,Pi,LL] = em_gibbs(Y,K,M,maxIter,epsilon)
         C = (C+C')/2; % Make sure C is symmetric because of small computations errors
         P = sum3 ./ sum(sum3,2);
     
-        if (tau > 1) && (LL(end) - LL(end-1) < epsilon)
+        if (tau > 1) && (aLL(end) - aLL(end-1) < epsilon)
             break;
         end
     end
