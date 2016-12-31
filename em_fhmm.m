@@ -1,13 +1,21 @@
-function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
+function [W,C,P,Pi,LL,time] = em_fhmm(Y,K,M,maxIter,epsilon,W0,P0)
+    
+    [D,T] = size(Y);
+    
+    if nargin < 6
+        W = randn(D,M*K);
+        P = rand(M*K,K);
+        P = P ./ sum(P,2);
+    else
+        W = W0;
+        P = P0;
+    end
     
     % Initialization
-    [D,T] = size(Y);
     Pi = 1/K*ones(M,K);
     C = eye(D);
-    W = randn(D,M*K);
-    P = rand(M*K,K);
-    P = P ./ sum(P,2);
     LL = [];
+    time = [];
     
     % Compute states
     states = get_all_states(M,K);
@@ -25,6 +33,8 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
     end
     
     for tau=1:maxIter
+        tic
+    
         % Compute Ptrans, mu and gauss 
         Ptrans = computePtrans(P,states);
         mu = computeMu(W,states);
@@ -84,6 +94,8 @@ function [W,C,P,Pi,LL] = em_fhmm(Y,K,M,maxIter,epsilon)
         C = Y*Y'/T - 1/T * sum1 * W';
         C = (C+C')/2; % Make sure C is symmetric because of small computations errors
         P = sum3 ./ sum(sum3,2);
+    
+        time = [time , toc];
     
         if (tau > 1) && (LL(end) - LL(end-1) < epsilon)
             break;
