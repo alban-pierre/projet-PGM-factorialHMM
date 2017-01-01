@@ -1,23 +1,33 @@
 % EM algorithm with structural variational approximation
 
-function [W,C,P,Pi,LL] = em_sva(Y,K,M,maxIter,epsilon)
+function [W,C,P,Pi,LL,aLL,time] = em_sva(Y,K,M,maxIter,epsilon,W0,P0)
+    
+    [D,T] = size(Y);
+    
+    if nargin < 6
+        W = randn(D,M*K);
+        P = rand(M*K,K);
+        P = P ./ sum(P,2);
+    else
+        W = W0;
+        P = P0;
+    end
     
     % Initialization
-    [D,T] = size(Y);
     Pi = 1/K*ones(M,K);
-    C = eye(D);
-    W = randn(D,M*K);
-    P = rand(M*K,K);
-    P = P ./ sum(P,2);
+    C = diag(diag(cov(Y')));
     LL = [];
     aLL = [];
+    time = [];
 
     ESt = zeros(T,M*K);
     
     states = get_all_states(M,K);
     states1 = (1:K)'; % get_all_states(1,K);
     
-    for tau=1:maxIter        
+    for tau=1:maxIter   
+        tic
+    
         % E Step
         
         invC = pinv(C);
@@ -93,7 +103,12 @@ function [W,C,P,Pi,LL] = em_sva(Y,K,M,maxIter,epsilon)
         W = sum1 * pinv(sum2);
         C = Y*Y'/T - 1/T * sum1 * W';
         C = (C+C')/2; % Make sure C is symmetric because of small computations errors
+        while det(C) <= 0 % Make sure C is PSD
+            C = C + 1e-3 * eye(D);
+        end
         P = sum3 ./ sum(sum3,2);
+        
+        time = [time , toc];
         
         % Break if convergence
         if (tau > 1) && (aLL(end) - aLL(end-1) < epsilon)
