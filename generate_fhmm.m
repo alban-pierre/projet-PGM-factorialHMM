@@ -8,10 +8,10 @@ function [Y,Ytest,Pi,P,W,C] = generate_fhmm(T,K,M,D)
     P = rand(M*K,K);
     P = P ./ sum(P,2);
 
-    W = 2 * randn(D,M*K);
+    W = randn(D,M*K);
 
     %C = diag(rand(1,D)); % To be sure it is psd
-    C = 0.1 * eye(D);
+    C = 0.01 * eye(D);
 
     % Compute sequence of hidden and observable varibles
     S = zeros(M*K,T);
