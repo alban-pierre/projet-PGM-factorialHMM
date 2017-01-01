@@ -15,7 +15,7 @@ function [W,C,P,Pi,LL,aLL,time] = em_cfva(Y,K,M,maxIter,epsilon,W0,P0)
     
     % Initialization
     Pi = 1/K*ones(M,K);
-    C = eye(D);
+    C = diag(diag(cov(Y')));
     LL = [];
     aLL = [];
     time = [];
