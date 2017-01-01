@@ -45,7 +45,14 @@ for M = [2,3]
             [W1,C1,P1,Pi1,ll1] = em_fhmm(Y,K,M,maxIter,epsilon,W0,P0);
             [W2,C2,P2,Pi2,ll2] = em_gibbs(Y,K,M,maxIter,epsilon,W0,P0);
             [W3,C3,P3,Pi3,ll3] = em_cfva(Y,K,M,maxIter,epsilon,W0,P0);
-            [W4,C4,P4,Pi4,ll4] = em_sva(Y,K,M,maxIter,epsilon,W0,P0);
+            try     % To avoid errors
+                [W4,C4,P4,Pi4,ll4] = em_sva(Y,K,M,maxIter,epsilon,W0,P0);
+                LL4 = [LL4 , ll4(end)];
+                LL4test = [LL4test , loglikelihood(Ytest,W4,C4,P4,Pi4)];
+            catch
+                fprintf('Error sva : M = %d, K = %d, rep = %d\n',M,K,t);
+                continue
+            end
             
             % Compute log-likelihood training and test set
             LL1 = [LL1 , ll1(end)];
@@ -54,8 +61,6 @@ for M = [2,3]
             LL2test = [LL2test , loglikelihood(Ytest,W2,C2,P2,Pi2)];
             LL3 = [LL3 , ll3(end)];
             LL3test = [LL3test , loglikelihood(Ytest,W3,C3,P3,Pi3)];
-            LL4 = [LL4 , ll4(end)];
-            LL4test = [LL4test , loglikelihood(Ytest,W4,C4,P4,Pi4)];
         end 
         
         % Mean and standard deviation of log-likelihood
