@@ -1,4 +1,4 @@
-function [out1, out2, out3, s] = gibbs_sampling(Y, Pi, P, W, C, n_it, s)
+function [out1, out2, out3] = gibbs_sampling(Y, Pi, P, W, C, n_it)
 
     T = size(Y,2);
     [M,K] = size(Pi);
@@ -8,50 +8,44 @@ function [out1, out2, out3, s] = gibbs_sampling(Y, Pi, P, W, C, n_it, s)
     out2 = zeros(M*K,M*K,T); % <S_t^m S_t^n>
     out3 = zeros(M*K,K,T-1); % <S_t^m S_{t-1}^m>
 
-    % If possible we reuse the last sampling
-    if (nargin < 7)
-        s = zeros(M*K, T);
-        for t=1:T
-            s(:,t) = reshape(mnrnd(1,ones(M,K)/K)',M*K,1);
-        end
+    s = zeros(M*K, T);
+    for t=1:T
+        s(:,t) = reshape(mnrnd(1,ones(M,K)/K)',M*K,1);
     end
 
-    % They don't burn iterations in their experimentation, so you can delete it if you want
+
     % sacrificed iterations for burn-in
-    burn_in     = 5;
+    burn_in     = 0;
     % consecutive samples are not independent e.g. use every 100th sample for estimation
-    step_sample = 5;
+    step_sample = 1;
     
     for it=1:(burn_in + (n_it * step_sample))
         
         for t = 1:T
             for m=1:M
                 if t == 1
-                    pa = P((m-1)*K+1:m*K,s((m-1)*K+1:m*K,t+1)'>0.5);
-                    pb = Pi(m,:)';
+                    pa = (s((m-1)*K+1:m*K,t+1)'>0.5) * P((m-1)*K+1:m*K,:);
+                    pb = Pi(m,:);
                 elseif t == T
-                    pa = ones(K,1);
-                    pb = P((m-1)*K+1:m*K,:);
-                    pb = pb(s((m-1)*K+1:m*K, t-1)>0.5, :)';
+                    pa = ones(1,K);
+                    pb = (s((m-1)*K+1:m*K, t-1)'>0.5) * P((m-1)*K+1:m*K,:);
                 else
-                    pa = P((m-1)*K+1:m*K,s((m-1)*K+1:m*K,t+1)'>0.5);
+                    pa = (s((m-1)*K+1:m*K,t+1)'>0.5) * P((m-1)*K+1:m*K,:);
                     pb = P((m-1)*K+1:m*K,:);
-                    pb = pb(s((m-1)*K+1:m*K, t-1)>0.5, :)';
+                    pb = (s((m-1)*K+1:m*K, t-1)'>0.5) * P((m-1)*K+1:m*K,:);
                 end
                 sformu = s(:,t);
+                py = zeros(1,2);
                 for k=1:K
                     sformu((m-1)*K+1:m*K,1) = (1:K==k)';
                     mu = sum(W'.*repmat(sformu,1,D),1);
-                    py(k,:) = mvnpdf(Y(:,t)',mu,C);
+                    py(1,k) = -1/2*(Y(:,t)'-mu)*pinv(C)*(Y(:,t)-mu')...
+                        -D/2*log(2*pi)-0.5*log(det(C));
                 end
-                % The following four lines avoid probabilities like p = [1, 10e-54], but there
-                % must be a better way to do this
-                if (it < burn_in/2)
-                    py = py./(10*max(max(py,1),[],1));
-                    py = 1./(-log(py));
-                end
-                p = pa.*pb.*py;
-                p = p'/sum(p,1);
+                p = log(pa) + log(pb) + py;
+                a = max(p);
+                p = exp(p - (a + log(sum(exp(p-a)))));
+                p = p / sum(p);
                 s((m-1)*K+1:m*K,t) = mnrnd(1,p)';
                 assert(sum(s((m-1)*K+1:m*K,t)) == 1);
             end
