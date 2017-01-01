@@ -19,18 +19,12 @@ function [W,C,P,Pi,LL,aLL,time] = em_gibbs(Y,K,M,maxIter,epsilon,W0,P0)
     time = [];
     states = get_all_states(M,K);
     
-    %initialisation of gibbs_sampling
-    s = zeros(M*K, T);
-    for t=1:T
-        s(:,t) = reshape(mnrnd(1,ones(M,K)/K)',M*K,1);
-    end
-    
-
     for tau=1:maxIter
         tic
 
         % E step
-        [ESt, ESmSn, EStSt, s] = gibbs_sampling(Y, Pi, P, W, C, 10, s);
+        [ESt, ESmSn, EStSt] = gibbs_sampling(Y, Pi, P, W, C, 10);
+        % Gibbs sampling works, the problem comes from the presence of NaN in P
         
         % \sum_{t=1}^T Y_t <S_t>
         sum1 = zeros(D,K*M);
