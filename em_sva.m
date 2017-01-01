@@ -15,7 +15,7 @@ function [W,C,P,Pi,LL,aLL,time] = em_sva(Y,K,M,maxIter,epsilon,W0,P0)
     
     % Initialization
     Pi = 1/K*ones(M,K);
-    C = eye(D);
+    C = diag(diag(cov(Y')));
     LL = [];
     aLL = [];
     time = [];
@@ -106,6 +106,9 @@ function [W,C,P,Pi,LL,aLL,time] = em_sva(Y,K,M,maxIter,epsilon,W0,P0)
         W = sum1 * pinv(sum2);
         C = Y*Y'/T - 1/T * sum1 * W';
         C = (C+C')/2; % Make sure C is symmetric because of small computations errors
+        while det(C) <= 0 % Make sure C is PSD
+            C = C + 1e-3 * eye(D);
+        end
         P = sum3 ./ sum(sum3,2);
         
         time = [time , toc];
