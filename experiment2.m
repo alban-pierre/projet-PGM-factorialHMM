@@ -18,16 +18,18 @@ maxIter = 100;
 epsilon = 1e-4;
 repeat = 20;
 
-LL0 = []; LL0test = [];
-LL1f = []; LL1testf = [];
-LL2f = []; LL2testf = [];
-LL3f = []; LL3testf = [];
-LL4f = []; LL4testf = [];
-
 % Comparison performance
 M = 3;
 K = 2;
-[Y,Ytest,Pi,P,W,C] = generate_fhmm(T,K,M,D);
+%[Y,Ytest,Pi,P,W,C] = generate_fhmm(T,K,M,D);
+P1 = rand(M*K,K);
+P2 = rand(M*K,K);
+P3 = rand(M*K,K);
+P4 = rand(M*K,K);
+P1 = P1 ./ sum(P1,2);
+P2 = P2 ./ sum(P2,2);
+P3 = P3 ./ sum(P3,2);
+P4 = P4 ./ sum(P4,2);
 
 alls = eye(K);
 for m=2:M
@@ -45,7 +47,7 @@ for t=1:repeat
     end
     [Y,Ytest,Pi,P,W,C] = generate_fhmm(T,K,M,D);
     
-    % Different types of initialisations based on kmeans
+    % Different types of initialisations of W based on kmeans
     if (false) % fhmm success : 5/20
         W0 = randn(D,M*K);
     elseif (false) % fhmm success : 6/20
@@ -107,7 +109,26 @@ for t=1:repeat
         W0 = W0{imin};
     end
 
-    P0 = rand(M*K,K);
+    % Different types of initialisations of P
+    if (false)
+        P0 = rand(M*K,K);
+    else % fhmm success : 20/20 (with the 3rd init of W doing 15/20 with random P init)
+        Y_2 = Y;
+        ki = W0(:, 1:K);
+        dd = sqdist(ki,Y_2);
+        [~,imin] = min(dd,[],1);
+        P0(1:K,:) = repmat(mean(repmat(imin,K,1) == repmat((1:K)',1,T),2)',K,1);
+        for m=2:M
+            for k=1:K
+                Y_2 = Y_2 - repmat((imin == k),D,1).*repmat(ki(:,k),1,T);
+            end
+            ki = W0(:, (m-1)*K+1:m*K);
+            dd = sqdist(ki,Y_2);
+            [~,imin] = min(dd,[],1);
+            P0((m-1)*K+1:m*K,:) = repmat(mean(repmat(imin,K,1) == repmat((1:K)',1,T),2)',K,1);
+        end
+    end
+
     P0 = P0 ./ sum(P0,2);
     % End of initialisations
     
@@ -130,9 +151,73 @@ for t=1:repeat
     %mu4 = W4*alls';
 
 
+    % compute probabilities of each center
+    p0 = zeros(M,K);
+    for m=1:M
+        [v,d] = eig(P0((m-1)*K+1:m*K,:)');
+        p0(m,:) = v(:,(abs(diag(d) - 1) < 0.000001)');
+    end
+    p0 = p0 ./ sum(p0,2);  
+    p0 = repmat(reshape(p0',K*M,1), 1, K^M).*alls';
+    p0 = prod(reshape(p0(alls'>0.5),M,K^M),1);
+    
+    p1 = zeros(M,K);
+    for m=1:M
+        [v,d] = eig(P1((m-1)*K+1:m*K,:)');
+        p1(m,:) = v(:,(abs(diag(d) - 1) < 0.000001)');
+    end
+    p1 = p1 ./ sum(p1,2);
+    p1 = repmat(reshape(p1',K*M,1), 1, K^M).*alls';
+    p1 = prod(reshape(p1(alls'>0.5),M,K^M),1);
+
+    p2 = zeros(M,K);
+    for m=1:M
+        [v,d] = eig(P2((m-1)*K+1:m*K,:)');
+        p2(m,:) = v(:,(abs(diag(d) - 1) < 0.000001)');
+    end
+    p2 = p2 ./ sum(p2,2);
+    p2 = repmat(reshape(p2',K*M,1), 1, K^M).*alls';
+    p2 = prod(reshape(p2(alls'>0.5),M,K^M),1);
+
+    p3 = zeros(M,K);
+    for m=1:M
+        [v,d] = eig(P3((m-1)*K+1:m*K,:)');
+        p3(m,:) = v(:,(abs(diag(d) - 1) < 0.000001)');
+    end
+    p3 = p3 ./ sum(p3,2);
+    p3 = repmat(reshape(p3',K*M,1), 1, K^M).*alls';
+    p3 = prod(reshape(p3(alls'>0.5),M,K^M),1);
+
+    p4 = zeros(M,K);
+    for m=1:M
+        [v,d] = eig(P4((m-1)*K+1:m*K,:)');
+        p4(m,:) = v(:,(abs(diag(d) - 1) < 0.000001)');
+    end
+    p4 = p4 ./ sum(p4,2);
+    p4 = repmat(reshape(p4',K*M,1), 1, K^M).*alls';
+    p4 = prod(reshape(p4(alls'>0.5),M,K^M),1);
+    
+
     figure(t); hold off;
     plot(Y(1,:), Y(2,:), '.b');
     hold on;
+
+    for i=1:K^M
+        plot(mu0(1,i), mu0(2,i), 'co', 'MarkerSize',10+round(p0(1,i)*200),'LineWidth',1);
+    end
+    for i=1:K^M
+        plot(mu1(1,i), mu1(2,i), 'ko', 'MarkerSize',10+round(p1(1,i)*200),'LineWidth',1);
+    end
+    for i=1:K^M
+        %plot(mu2(1,i), mu2(2,i), 'go', 'MarkerSize',10+round(p2(1,i)*200),'LineWidth',1);
+    end
+    for i=1:K^M
+        %plot(mu3(1,i), mu3(2,i), 'ro', 'MarkerSize',10+round(p3(1,i)*200),'LineWidth',1);
+    end
+    for i=1:K^M
+        %plot(mu4(1,i), mu4(2,i), 'mo', 'MarkerSize',10+round(p4(1,i)*200),'LineWidth',1);
+    end
+    
     plot(mu(1,:), mu(2,:), 'bx', 'MarkerSize',15,'LineWidth',3);
     plot(mu0(1,:), mu0(2,:), 'cx', 'MarkerSize',15,'LineWidth',3);
     plot(mu1(1,:), mu1(2,:), 'kx', 'MarkerSize',15,'LineWidth',3);
