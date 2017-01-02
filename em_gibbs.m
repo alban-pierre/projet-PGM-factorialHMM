@@ -24,7 +24,7 @@ function [W,C,P,Pi,LL,aLL,time] = em_gibbs(Y,K,M,maxIter,epsilon,W0,P0)
 
         % E step
         [ESt, ESmSn, EStSt] = gibbs_sampling(Y, Pi, P, W, C, 10);
-        % Gibbs sampling works, the problem comes from the presence of NaN in P
+
         
         % \sum_{t=1}^T Y_t <S_t>
         sum1 = zeros(D,K*M);
@@ -50,7 +50,14 @@ function [W,C,P,Pi,LL,aLL,time] = em_gibbs(Y,K,M,maxIter,epsilon,W0,P0)
         W = sum1 * pinv(sum2);
         C = Y*Y'/T - 1/T * sum1 * W';
         C = (C+C')/2; % Make sure C is symmetric because of small computations errors
-        P = sum3 ./ sum(sum3,2);
+        for i=1:K*M 
+            temp=sum(sum3(i,:));
+            if(temp==0)
+                P(i,:) = ones(1,K) / K; % To avoid error
+            else
+                P(i,:) = sum3(i,:)/temp;
+            end
+        end
     
         time = [time , toc];
     
