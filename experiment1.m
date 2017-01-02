@@ -39,8 +39,9 @@ for M = [2,3]
             % Init
             W0 = randn(D,M*K);
             P0 = rand(M*K,K);
+            %[W0, P0, C0] = recursive_kmeans_init(Y, M, K);
             P0 = P0 ./ sum(P0,2);
-                
+            
             % Exec
             [W1,C1,P1,Pi1,ll1] = em_fhmm(Y,K,M,maxIter,epsilon,W0,P0);
             [W2,C2,P2,Pi2,ll2] = em_gibbs(Y,K,M,maxIter,epsilon,W0,P0);
