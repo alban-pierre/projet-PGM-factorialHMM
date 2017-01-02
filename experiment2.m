@@ -152,6 +152,15 @@ for t=1:repeat
 
 
     % compute probabilities of each center
+    p = zeros(M,K);
+    for m=1:M
+        [v,d] = eig(P((m-1)*K+1:m*K,:)');
+        p(m,:) = v(:,(abs(diag(d) - 1) < 0.000001)');
+    end
+    p = p ./ sum(p,2);  
+    p = repmat(reshape(p',K*M,1), 1, K^M).*alls';
+    p = prod(reshape(p(alls'>0.5),M,K^M),1);
+    
     p0 = zeros(M,K);
     for m=1:M
         [v,d] = eig(P0((m-1)*K+1:m*K,:)');
@@ -202,6 +211,9 @@ for t=1:repeat
     plot(Y(1,:), Y(2,:), '.b');
     hold on;
 
+    for i=1:K^M
+        plot(mu(1,i), mu(2,i), 'bo', 'MarkerSize',10+round(p(1,i)*200),'LineWidth',1);
+    end
     for i=1:K^M
         plot(mu0(1,i), mu0(2,i), 'co', 'MarkerSize',10+round(p0(1,i)*200),'LineWidth',1);
     end
