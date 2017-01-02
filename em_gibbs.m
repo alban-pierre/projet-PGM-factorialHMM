@@ -59,15 +59,21 @@ function [W,C,P,Pi,LL,aLL,time] = em_gibbs(Y,K,M,maxIter,epsilon,W0,P0,C0)
         W = sum1 * pinv(sum2);
         C = Y*Y'/T - 1/T * sum1 * W';
         C = (C+C')/2; % Make sure C is symmetric because of small computations errors
+        % To avoid error
         for i=1:K*M 
             temp=sum(sum3(i,:));
-            if(temp==0)
-                P(i,:) = ones(1,K) / K; % To avoid error
+            if(temp==0 || ~isempty(find(sum3(i,:)==0,1)))
+                P(i,:) = ones(1,K) / K;
             else
                 P(i,:) = sum3(i,:)/temp;
             end
         end
-    
+        for m=1:M
+            if ~isempty(find(Pi(m,:)==0,1))
+                Pi(m,:) = ones(1,K) ./ K;
+            end
+        end
+        
         time = [time , toc];
     
         if (tau > 1) && (aLL(end) - aLL(end-1) < epsilon)
