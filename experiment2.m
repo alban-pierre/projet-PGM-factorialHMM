@@ -31,46 +31,46 @@ K = 2;
 
 for t=1:repeat
 
-	% Init
-	W0 = randn(D,M*K);
-	P0 = rand(M*K,K);
-	P0 = P0 ./ sum(P0,2);
+    % Init
+    W0 = randn(D,M*K);
+    P0 = rand(M*K,K);
+    P0 = P0 ./ sum(P0,2);
     
-	% Exec
-	[W1,C1,P1,Pi1,ll1] = em_fhmm(Y,K,M,maxIter,epsilon,W0,P0);
-	[W2,C2,P2,Pi2,ll2] = em_gibbs(Y,K,M,maxIter,epsilon,W0,P0);
-	[W3,C3,P3,Pi3,ll3] = em_cfva(Y,K,M,maxIter,epsilon,W0,P0);
-	try     % To avoid errors
-		[W4,C4,P4,Pi4,ll4] = em_sva(Y,K,M,maxIter,epsilon,W0,P0);
-	catch
-		fprintf('Error sva : M = %d, K = %d, rep = %d\n',M,K,t);
-		continue
-	end
+    % Exec
+    [W1,C1,P1,Pi1,ll1] = em_fhmm(Y,K,M,maxIter,epsilon,W0,P0);
+    [W2,C2,P2,Pi2,ll2] = em_gibbs(Y,K,M,maxIter,epsilon,W0,P0);
+    [W3,C3,P3,Pi3,ll3] = em_cfva(Y,K,M,maxIter,epsilon,W0,P0);
+    try     % To avoid errors
+        [W4,C4,P4,Pi4,ll4] = em_sva(Y,K,M,maxIter,epsilon,W0,P0);
+    catch
+        fprintf('Error sva : M = %d, K = %d, rep = %d\n',M,K,t);
+        continue
+    end
     
-	figure(1); hold off;
-	plot(Y(1,:), Y(2,:), '.b');
-	hold on;
+    figure(1); hold off;
+    plot(Y(1,:), Y(2,:), '.b');
+    hold on;
 
-	alls = eye(K);
-	for m=2:M
-		alls = reshape(repmat(alls,1,K)',K*(m-1),K^m)';
-		alls = [alls, repmat(eye(K), size(alls,1)/K,1)];
-	end
+    alls = eye(K);
+    for m=2:M
+        alls = reshape(repmat(alls,1,K)',K*(m-1),K^m)';
+        alls = [alls, repmat(eye(K), size(alls,1)/K,1)];
+    end
 
-	mu = W*alls';
-	mu1 = W1*alls';
-	mu2 = W2*alls';
-	mu3 = W3*alls';
-	mu4 = W4*alls';
+    mu = W*alls';
+    mu1 = W1*alls';
+    mu2 = W2*alls';
+    mu3 = W3*alls';
+    mu4 = W4*alls';
 
 
-	figure(t); hold off;
-	plot(Y(1,:), Y(2,:), '.b');
-	hold on;
-	plot(mu(1,:), mu(2,:), 'bx', 'MarkerSize',15,'LineWidth',3);
-	plot(mu1(1,:), mu1(2,:), 'kx', 'MarkerSize',15,'LineWidth',3);
-	plot(mu2(1,:), mu2(2,:), 'gx', 'MarkerSize',15,'LineWidth',3);
-	plot(mu3(1,:), mu3(2,:), 'rx', 'MarkerSize',15,'LineWidth',3);
-	plot(mu4(1,:), mu4(2,:), 'mx', 'MarkerSize',15,'LineWidth',3);
+    figure(t); hold off;
+    plot(Y(1,:), Y(2,:), '.b');
+    hold on;
+    plot(mu(1,:), mu(2,:), 'bx', 'MarkerSize',15,'LineWidth',3);
+    plot(mu1(1,:), mu1(2,:), 'kx', 'MarkerSize',15,'LineWidth',3);
+    plot(mu2(1,:), mu2(2,:), 'gx', 'MarkerSize',15,'LineWidth',3);
+    plot(mu3(1,:), mu3(2,:), 'rx', 'MarkerSize',15,'LineWidth',3);
+    plot(mu4(1,:), mu4(2,:), 'mx', 'MarkerSize',15,'LineWidth',3);
 
 end
