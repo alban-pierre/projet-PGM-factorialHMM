@@ -13,8 +13,8 @@ if (isMatlab)
     rng(1);
 else
     pkg load statistics;
-    %randn('seed',8);
-    %rand('seed',8);
+    randn('seed',2);
+    rand('seed',2);
 end
 
 
@@ -23,6 +23,7 @@ days = size(d,1)/96; % 105
 
 Y = reshape(d(1:96*20), 2, 20*48);
 Y_test = reshape(d(96*20+(1:96*10)), 2, 10*48);
+Y_test2 = reshape(d(96*30+(1:96*10)), 2, 10*48);
 
 
 K = 2;
@@ -31,7 +32,8 @@ maxIter = 100;
 epsilon = 1e-4;
 
 
-[W0, P0, C0] = recursive_kmeans_init(Y, M, K);
+[W0, P0, C0] = recursive_kmeans_init(Y, M, K); % sometimes it fails because too many points are exactly the same
 [W,C,P,Pi,ll] = em_fhmm(Y,K,M,maxIter,epsilon,W0,P0,C0);
 
 LL = loglikelihood(Y_test,W,C,P,Pi)
+LL2 = loglikelihood(Y_test2,W,C,P,Pi)
