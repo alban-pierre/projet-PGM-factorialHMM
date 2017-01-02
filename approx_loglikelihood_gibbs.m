@@ -1,5 +1,5 @@
 % cf formula A.1 
-function ll = approx_loglikelihood(ESt,ESmSn,EStSt,Y,W,invC,P,Pi)
+function ll = approx_loglikelihood_gibbs(ESt,ESmSn,EStSt,Y,W,invC,P,Pi)
 
     [D,T] = size(Y);
     [M,K] = size(Pi);
