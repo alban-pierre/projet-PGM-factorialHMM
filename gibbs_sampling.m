@@ -58,8 +58,10 @@ function [out1, out2, out3] = gibbs_sampling(Y, Pi, P, W, C, n_it)
                     out2(:,:,t) = out2(:,:,t) + repmat(s(:,t),1,K*M).*repmat(s(:,t),1,K*M)';
                     
                     if t < T
-                        out3(:,:,t) = out3(:,:,t) + repmat(s(:,t+1), 1,K) .* ...
-                            reshape(repmat(reshape(s(:,t),K,M)',1,K)',K,K*M)';
+                        for m = 1:M
+                            out3((m-1)*K+1:m*K,:,t) = out3((m-1)*K+1:m*K,:,t) + ...
+                            s((m-1)*K+1:m*K,t) * s((m-1)*K+1:m*K,t+1)';           
+                        end
                     end
                 end
             end
