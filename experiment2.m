@@ -16,7 +16,7 @@ D = 2;
 T = 100;
 maxIter = 100;
 epsilon = 1e-4;
-repeat = 5;
+repeat = 20;
 
 % Comparison performance
 M = 3;
@@ -48,6 +48,7 @@ for t=1:repeat
     [Y,Ytest,Pi,P,W,C] = generate_fhmm(T,K,M,D);
     
     % Different types of initialisations of W based on kmeans
+    % If you use theses init put the recursive_kmeans_init in comment
     if (false) % fhmm success : 5/20
         W0 = randn(D,M*K);
     elseif (false) % fhmm success : 6/20
@@ -129,15 +130,19 @@ for t=1:repeat
         end
     end
 
+    C0 = diag(diag(cov(Y')));
+
+    % The following line erase all previous init
+    %[W0, P0, C0] = recursive_kmeans_init(Y, M, K);
     P0 = P0 ./ sum(P0,2);
     % End of initialisations
     
     % Exec
-    [W1,C1,P1,Pi1,ll1] = em_fhmm(Y,K,M,maxIter,epsilon,W0,P0);
-    %[W2,C2,P2,Pi2,ll2] = em_gibbs(Y,K,M,maxIter,epsilon,W0,P0);
-    [W3,C3,P3,Pi3,ll3] = em_cfva(Y,K,M,maxIter,epsilon,W0,P0);
+    [W1,C1,P1,Pi1,ll1] = em_fhmm(Y,K,M,maxIter,epsilon,W0,P0,C0);
+    %[W2,C2,P2,Pi2,ll2] = em_gibbs(Y,K,M,maxIter,epsilon,W0,P0,C0);
+    %[W3,C3,P3,Pi3,ll3] = em_cfva(Y,K,M,maxIter,epsilon,W0,P0,C0);
     try     % To avoid errors
-        [W4,C4,P4,Pi4,ll4] = em_sva(Y,K,M,maxIter,epsilon,W0,P0);
+        %[W4,C4,P4,Pi4,ll4] = em_sva(Y,K,M,maxIter,epsilon,W0,P0,C0);
     catch
         fprintf('Error sva : M = %d, K = %d, rep = %d\n',M,K,t);
         continue
@@ -147,8 +152,8 @@ for t=1:repeat
     mu0 = W0*alls';
     mu1 = W1*alls';
     %mu2 = W2*alls';
-    mu3 = W3*alls';
-    mu4 = W4*alls';
+    %mu3 = W3*alls';
+    %mu4 = W4*alls';
 
 
     % compute probabilities of each center
@@ -224,17 +229,17 @@ for t=1:repeat
         %plot(mu2(1,i), mu2(2,i), 'go', 'MarkerSize',10+round(p2(1,i)*200),'LineWidth',1);
     end
     for i=1:K^M
-        plot(mu3(1,i), mu3(2,i), 'ro', 'MarkerSize',10+round(p3(1,i)*200),'LineWidth',1);
+        %plot(mu3(1,i), mu3(2,i), 'ro', 'MarkerSize',10+round(p3(1,i)*200),'LineWidth',1);
     end
     for i=1:K^M
-        plot(mu4(1,i), mu4(2,i), 'mo', 'MarkerSize',10+round(p4(1,i)*200),'LineWidth',1);
+        %plot(mu4(1,i), mu4(2,i), 'mo', 'MarkerSize',10+round(p4(1,i)*200),'LineWidth',1);
     end
     
     plot(mu(1,:), mu(2,:), 'bx', 'MarkerSize',15,'LineWidth',3);
     plot(mu0(1,:), mu0(2,:), 'cx', 'MarkerSize',15,'LineWidth',3);
     plot(mu1(1,:), mu1(2,:), 'kx', 'MarkerSize',15,'LineWidth',3);
     %plot(mu2(1,:), mu2(2,:), 'gx', 'MarkerSize',15,'LineWidth',3);
-    plot(mu3(1,:), mu3(2,:), 'rx', 'MarkerSize',15,'LineWidth',3);
-    plot(mu4(1,:), mu4(2,:), 'mx', 'MarkerSize',15,'LineWidth',3);
+    %plot(mu3(1,:), mu3(2,:), 'rx', 'MarkerSize',15,'LineWidth',3);
+    %plot(mu4(1,:), mu4(2,:), 'mx', 'MarkerSize',15,'LineWidth',3);
 
 end

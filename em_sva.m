@@ -1,21 +1,29 @@
 % EM algorithm with structural variational approximation
 
-function [W,C,P,Pi,LL,aLL,time] = em_sva(Y,K,M,maxIter,epsilon,W0,P0)
+function [W,C,P,Pi,LL,aLL,time] = em_sva(Y,K,M,maxIter,epsilon,W0,P0,C0)
     
     [D,T] = size(Y);
     
     if nargin < 6
         W = randn(D,M*K);
+    else
+        W = W0;
+    end
+    if nargin < 7
         P = rand(M*K,K);
         P = P ./ sum(P,2);
     else
-        W = W0;
         P = P0;
     end
-    
+    if nargin < 8
+        C = diag(diag(cov(Y')));
+    else
+        C = C0;
+    end
+
     % Initialization
     Pi = 1/K*ones(M,K);
-    C = diag(diag(cov(Y')));
+    %C = diag(diag(cov(Y')));
     LL = [];
     aLL = [];
     time = [];

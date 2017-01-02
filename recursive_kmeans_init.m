@@ -17,6 +17,6 @@ function [W0, P0, C0] = recursive_kmeans_init(Y, M, K)
 
     P0 = P0 ./ sum(P0,2);
 
-    C0 = mean(eig(cov(Y_2')));
+    C0 = mean(eig(cov(Y_2')))*eye(D);
 
 end
