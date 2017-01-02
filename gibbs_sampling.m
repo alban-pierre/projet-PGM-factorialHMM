@@ -31,7 +31,6 @@ function [out1, out2, out3] = gibbs_sampling(Y, Pi, P, W, C, n_it)
                     pb = (s((m-1)*K+1:m*K, t-1)'>0.5) * P((m-1)*K+1:m*K,:);
                 else
                     pa = (s((m-1)*K+1:m*K,t+1)'>0.5) * P((m-1)*K+1:m*K,:);
-                    pb = P((m-1)*K+1:m*K,:);
                     pb = (s((m-1)*K+1:m*K, t-1)'>0.5) * P((m-1)*K+1:m*K,:);
                 end
                 sformu = s(:,t);
@@ -55,14 +54,15 @@ function [out1, out2, out3] = gibbs_sampling(Y, Pi, P, W, C, n_it)
             if mod(it,step_sample) == 0
                 out1 = out1 + s;
                 for t=1:T
-                    out2(:,:,t) = out2(:,:,t) + repmat(s(:,t),1,K*M).*repmat(s(:,t),1,K*M)';
-                    
-                    if t < T
-                        for m = 1:M
+                    temp = s(:,t) * s(:,t)';
+                    for m = 1:M
+                        temp((m-1)*K+1:m*K,(m-1)*K+1:m*K) = diag(s((m-1)*K+1:m*K,t));
+                        if t < T
                             out3((m-1)*K+1:m*K,:,t) = out3((m-1)*K+1:m*K,:,t) + ...
                             s((m-1)*K+1:m*K,t) * s((m-1)*K+1:m*K,t+1)';           
                         end
                     end
+                    out2(:,:,t) = out2(:,:,t) + temp;
                 end
             end
         end
