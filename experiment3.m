@@ -42,6 +42,8 @@ ndata = ndata-1;
 
 M = 3;
 K = 2;
+maxIter = 100;
+epsilon = 1e-4;
 
 LL = zeros(3,3);
 clear Ytest;
