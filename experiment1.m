@@ -18,24 +18,25 @@ maxIter = 100;
 epsilon = 1e-4;
 repeat = 15;
 
-LL0 = []; LL0test = [];
+LL0f = []; LL0testf = [];
 LL1f = []; LL1testf = [];
 LL2f = []; LL2testf = [];
 LL3f = []; LL3testf = [];
 LL4f = []; LL4testf = [];
 
 % Comparison performance
-for M = [2,3]
+for M = [3,5]
     for K = [2,3]
-        [Y,Ytest,Pi,P,W,C] = generate_fhmm(T,K,M,D);
-        LL0 = [LL0 , loglikelihood(Y,W,C,P,Pi)];
-        LL0test = [LL0test , loglikelihood(Ytest,W,C,P,Pi)];
+        LL0 = []; LL0test = [];
         LL1 = []; LL1test = [];
         LL2 = []; LL2test = [];
         LL3 = []; LL3test = [];
         LL4 = []; LL4test = [];
         
         for t = 1:repeat
+            % Generate
+            [Y,Ytest,Pi,P,W,C] = generate_fhmm(T,K,M,D);
+            
             % Init
             W0 = randn(D,M*K);
             P0 = rand(M*K,K);
@@ -56,6 +57,8 @@ for M = [2,3]
             end
             
             % Compute log-likelihood training and test set
+            LL0 = [LL0 , loglikelihood(Y,W,C,P,Pi)];
+            LL0test = [LL0test , loglikelihood(Ytest,W,C,P,Pi)];
             LL1 = [LL1 , ll1(end)];
             LL1test = [LL1test , loglikelihood(Ytest,W1,C1,P1,Pi1)];
             LL2 = [LL2 , ll2(end)];
@@ -65,6 +68,8 @@ for M = [2,3]
         end 
         
         % Mean and standard deviation of log-likelihood
+        LL0f = [LL0f,[mean(LL0);std(LL0)]];
+        LL0testf = [LL0testf,[mean(LL0test);std(LL0test)]];
         LL1f = [LL1f,[mean(LL1);std(LL1)]];
         LL1testf = [LL1testf,[mean(LL1test);std(LL1test)]];
         LL2f = [LL2f,[mean(LL2);std(LL2)]];
