@@ -1,6 +1,7 @@
 \documentclass[10pt,a4paper]{report}
 \usepackage[latin1]{inputenc}
 %\usepackage[utf8x]{inputenc}
+\usepackage[english]{babel}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
@@ -30,7 +31,7 @@
 
 \Large{
 	
-	Hidden Markov Models (HMMs) are widely used for probabilistic models of time series data. Here we used a generalization of HMMs by having observations depending from several parallel hidden Markov models (figure (a)). This factorization leads to a big time improvement when computing the EM algorithm, especially when the HMM has states taking many values.
+	Hidden Markov Models (HMMs) are widely used for probabilistic models of time series data. Here we used a generalization of HMMs called factorial hidden Markov model, in which a state $S_t$ corresponding to an hidden variable is now represented by a collection of states $S_t = \left(S_t^{(1)},\dots,S_t^{(M)}\right)$ each of which can take $K^{(m)}$ values (figure (a)). Here we consider the case where $K = K^{(m)}$ for all $m$. Furthermore, we assume that $\{(S_t^{(m)})_{t=0}^T\}_{m=0}^M$ are independent Markov chains and that the observation $y_t$ are Gaussian random vector whose mean is a linear function of the hidden variables.
 	\newline
 	\newline
 	
@@ -38,7 +39,7 @@
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.7\textwidth]{fHMM.png}
+	\includegraphics[width=0.6\textwidth]{fHMM.png}
 	%\centerline{Factorial Hidden Markov Model}
 	\label{fig:b}
 \end{figure}
@@ -46,12 +47,29 @@
 
 \newpage
 \begin{center}
-\Huge{\textit{The models}}
+\Huge{\textit{Inference and learning}}
 \end{center}
+\vspace{20pt}
 
+\Large{
 
+Here we want to learn the parameters of a factorial HMM for a given structure. For that we use the EM algorithm to estimate them. While the M step is simple and tractable, the E step is computationally more difficult. We have four options:
 
+\begin{itemize}
+	\item[-]Exact inference: it is computationally intractable for a big model.
+	\item[-]Inference using Gibbs sampling.
+	\item[-]Completely factorized variational inference: we approximate the posterior distribution by a tractable distribution and we make the assumption that all the hidden variables are independent.
+	\item[-]Structured variational inference: same as above but we take into account the structure of the hidden variables (figure(b)).
+\end{itemize}
 
+}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.6\textwidth]{sva.png}
+	%\centerline{Factorial Hidden Markov Model}
+	\label{fig:b}
+\end{figure}
 
 
 
@@ -76,6 +94,13 @@ theory}
 \begin{center}
 \Huge{\textit{Experiments on synthetic data}}
 \end{center}
+\vspace{20pt}
+\Large{
+	We generate synthetic datasets using a factorial hidden Markov model and then we tried to learn the parameters with our 4 algorithms. Figure 1 shows the log-likelihood accross iterations and figure 2 shows the results in terms of centers found.
+	
+}
+
+TODO add log-likelihood plots and time of computation, and the protocol of experimentations
 
 \newpage
 -
