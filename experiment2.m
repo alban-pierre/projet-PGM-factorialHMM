@@ -38,12 +38,12 @@ for m=2:M
 end
 
 
-for t=1:repeat
+for t=[11,16,20]
 
     if (isMatlab)
         rng(t);
     else
-        randn('seed',t);
+        randn('seed',t); % 7, 11, 16, 20
     end
     [Y,Ytest,Pi,P,W,C] = generate_fhmm(T,K,M,D);
     
