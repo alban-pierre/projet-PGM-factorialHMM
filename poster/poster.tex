@@ -14,7 +14,7 @@
 
 
 
-% Le document est sur 6 pages organisées comme ci-dessous :
+% Le document est sur 6 pages organisÃ©es comme ci-dessous :
 % 1 3 5
 % 2 4 6
 
@@ -33,7 +33,7 @@
 
 \Large{
 	
-	Hidden Markov Models (HMMs) are widely used for probabilistic models of time series data. Here we used a generalization of HMMs called factorial hidden Markov model, in which a state $S_t$ corresponding to an hidden variable is now represented by a collection of states $S_t = \left(S_t^{(1)},\dots,S_t^{(M)}\right)$ each of which can take $K^{(m)}$ values (figure (a)). Here we consider the case where $K = K^{(m)}$ for all $m$. Furthermore, we assume that $\{(S_t^{(m)})_{t=0}^T\}_{m=0}^M$ are independent Markov chains and that the observation $y_t$ are Gaussian random vector whose mean is a linear function of the hidden variables.
+	Hidden Markov Models (HMMs) are widely used for probabilistic models of time series data. Here we used a generalization of HMMs called factorial hidden Markov model, in which a state $S_t$ corresponding to an hidden variable is now represented by a collection of states $S_t = \left(S_t^{(1)},\dots,S_t^{(M)}\right)$ each of which can take $K^{(m)}$ values (figure (a)). Here we consider the case where $K = K^{(m)}$ for all $m$. Furthermore, we assume that $\{(S_t^{(m)})_{t=0}^T\}_{m=0}^M$ are independent Markov chains and that the observation $y_t$ are Gaussian random vector whose mean is a linear function of the hidden variables and have the same covariance matrix $C$.
 	\newline
 	\newline
 	
@@ -137,7 +137,7 @@ TODO add log-likelihood plots and time of computation, and the protocol of exper
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=1.0\textwidth]{P2.png}
-	\centerline{Paramètres utilisés pour calculer les probabilités des états cachés}
+	\centerline{ParamÃ¨tres utilisÃ©s pour calculer les probabilitÃ©s des Ã©tats cachÃ©s}
 	\label{fig:b}
 \end{figure}
 
@@ -145,7 +145,7 @@ TODO add log-likelihood plots and time of computation, and the protocol of exper
 \begin{tabular}{lcc}
 	& Entrainement & Test \\
 	EM mixture de gaussiennes & -2371 & -2453 \\
-	EM chaine de Markov cachée & -1899 & -1957 \\
+	EM chaine de Markov cachÃ©e & -1899 & -1957 \\
 \end{tabular}
 \newline
 
