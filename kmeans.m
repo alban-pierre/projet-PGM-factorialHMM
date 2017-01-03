@@ -41,7 +41,9 @@ function [k, allk] = kmeans(X, K, epsilon)
         [~,imin] = min(dd,[],1);
         lastk = k;
         for i=1:K
-            k(:,i) = mean(X(:,imin==i),2);
+            if (sum(imin==i)>0.5)
+                k(:,i) = mean(X(:,imin==i),2);
+            end
         end
         allk = [allk, reshape(k,D*K,1)];
         stooop++;
