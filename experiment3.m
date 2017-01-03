@@ -52,7 +52,7 @@ for i=1:3
 end
 % Training and testing over 7 examples each
 for i=1:3
-    [W0, P0, C0] = recursive_kmeans_init(Y, M, K);
+    [W0, P0, C0] = recursive_kmeans_init(data{i,1}, M, K);
     [W,C,P,Pi,ll] = em_fhmm(data{i,1},K,M,maxIter,epsilon,W0,P0,C0);
 
     for j=1:3
