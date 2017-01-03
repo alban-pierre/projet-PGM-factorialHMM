@@ -218,7 +218,7 @@ Table 1 shows the results averaged over 15 runs for each algorithms on each of t
 
 \vspace{5pt}
 
-The initialization of parameters is crucial. With a random initialization, we achieved poor results as half centers found by our algorithms or less matched the whole data and the other half ended in the middle of nowhere. So we used a recursive K-means initialization, which works as follow : (with $W$ defining the centers : $\mu_t = W*S_t$ ; and $P$ the transition matrix)
+The initialization of parameters is crucial. With a random initialization, we achieved poor results as half centers found by our algorithms or less matched the whole data and the other half ended in the middle of nowhere. So we used a recursive K-means initialization, which works as follow : (with $W$ defining the centers : $\mu_t = W \times S_t$ ; and $P$ the transition matrix)
 
 \large{
 \begin{verbatim}
