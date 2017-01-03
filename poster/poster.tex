@@ -112,7 +112,7 @@ TODO add log-likelihood plots and time of computation, and the protocol of exper
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.8\textwidth]{fig11.png}
-	\centerline{\Large{(d) Centers on synthetic data}}
+	\centerline{\Large{(d) Centers for synthetic data}}
 	\label{fig:c}
 \end{figure}
 \begin{center}
@@ -136,7 +136,7 @@ For m = 1 to M
      k = kmeans with K centers
      Superpose each cluster found
      The m-th set of K columns of W = k
-     The m-th set of K lines of P = probability of clusters k
+     The m-th set of K lines of P = probabilities of clusters k
 endFor
 \end{verbatim}
 
@@ -195,6 +195,9 @@ Then we tried another dataset : CalIt2 Building People Counts Data Set, which co
 \end{center}
 \vspace{20pt}
 
+HMMs are used a lot and the factorial HMMs offers a generalization and a speed up in learning time-series probabilistics models. But in order to be efficient, the data must have regular cluters, organized in some patterns and few dataset have theses patterns. Moreover, the assumption that the covariance matrix is the same for each cluster seems false.
+
+Thus, further work should relax the covariance matrix equality for each cluster. It may also be helpful to add some links between each parallel HMM to match more complicated data, without being limited to match patterns.
 
 \iffalse
 
