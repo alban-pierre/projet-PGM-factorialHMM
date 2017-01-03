@@ -159,15 +159,40 @@ We applied the structural variational approximation on real data. First we choos
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.7\textwidth]{standing.png}
-	\centerline{\Large{Example of data from the Single Chest-Mounted Accelerometer Data Set}}
+	\centerline{\Large{Example of data from Single Chest-Mounted Accelerometer Data Set}}
 	\label{fig:e}
 \end{figure}
 
 \newpage
-Then we tried another dataset : CalIt2 Building People Counts Data Set, which counts the number of persons that come in and out of a building.
+Then we tried another dataset : CalIt2 Building People Counts Data Set, which counts the number of persons that come in and out of a building. So we expect different cluster such as the beginning of the day when every one comes in and nobody comes out, the night when there is no mouvement, or the lunch pause when there is many people coming both ways. Unfortunately, here again the dataset does not seem very structured (figure (f)).
 
+\begin{figure}[h]
+	\begin{minipage}[b]{.48\linewidth}
+		\vspace{10pt}
+		\includegraphics[width=1.0\textwidth]{building.png}
+		%  \vspace{1.5cm}
+		\begin{center}
+			\large{(f) Example of data from CalIt2 
+			Building People Counts Data Set}
+		\end{center}\medskip
+	\end{minipage}
+	\hfill
+	\begin{minipage}[b]{0.48\linewidth}
+		\includegraphics[width=1.0\textwidth]{expe4.png}
+		%  \vspace{1.5cm}
+		\begin{center}
+			\large{(g) Centers found by structural
+				variational approximation}
+			\end{center}\medskip
+	\end{minipage}
+	\label{fig:f}
+\end{figure}
 
-
+\vspace{30pt}
+\begin{center}
+	\Huge{\textit{Conclusion}}
+\end{center}
+\vspace{20pt}
 
 
 \iffalse
