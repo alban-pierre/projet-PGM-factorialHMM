@@ -96,15 +96,97 @@ theory}
 \Huge{\textit{Experiments on synthetic data}}
 \end{center}
 \vspace{20pt}
-\Large{
+%\Large{
 	
-	We generate synthetic datasets using a factorial hidden Markov model and then we tried to learn the parameters with our 4 algorithms. Figure (c) shows the log-likelihood accross iterations and figure (d) shows the results in terms of centers found.
+%	We generate synthetic datasets using a factorial hidden Markov model and then we tried to learn the parameters with our 4 algorithms. Figure (c) shows the log-likelihood accross iterations and figure (d) shows the results in terms of centers found.
 	
-}
+%}
 
-TODO add log-likelihood plots and time of computation, and the protocol of experimentations
+%TODO add log-likelihood plots and time of computation, and the protocol of experimentations
+
+Here, we generate synthetic datasets using a factorial hidden Markov model and then we tried to learn the parameters with our 4 algorithms. The data were generated from a factorial HMM structure with M Markov chains and each of the state variables could take K discrete values. We choose $C$ to be a multiple of the identity matrix $C = 0.01 I$. The other parameters were sampled from a uniform $[0,1]$ distribution and the transition matrix and priors were then normalized to satisfy the sum-to-one constraints. The training and test sets consisted of 200 Gaussian vector with dimension 2. 
+
+Table 1 shows the results averaged over 15 runs for each algorithms on each of the four problem sizes. 
+
+\begin{table}[h]
+\centering
+\begin{tabular}{cclll}
+\hline
+\ttfamily M & \ttfamily K & \ttfamily Algorithm & \ttfamily Training Set & \ttfamily Test Set \\
+\hline
+\multirow{4}{*}{3}  & \multirow{4}{*}{2} 
+& \multicolumn{1}{c}{Exact} & \multicolumn{1}{c}{0.84}  & \multicolumn{1}{c}{0.95}
+\\ \cline{3-5}
+&	 & \multicolumn{1}{c}{Gibbs} & \multicolumn{1}{c}{1.74} & \multicolumn{1}{c}{1.87}
+\\ \cline{3-5}
+&   & \multicolumn{1}{c}{CFVA} & \multicolumn{1}{c}{1.09} & \multicolumn{1}{c}{1.24} 
+\\ \cline{3-5}
+&    & \multicolumn{1}{c}{SVA} & \multicolumn{1}{c}{1.46} & \multicolumn{1}{c}{1.61} \\ 
+\hline
+  \multirow{4}{*}{3}  & \multirow{4}{*}{3} 
+& \multicolumn{1}{c}{Exact} & \multicolumn{1}{c}{0.96}  & \multicolumn{1}{c}{1.20}
+\\ \cline{3-5}
+&	 & \multicolumn{1}{c}{Gibbs} & \multicolumn{1}{c}{2.40} & \multicolumn{1}{c}{2.72}
+\\ \cline{3-5}
+&   & \multicolumn{1}{c}{CFVA} & \multicolumn{1}{c}{1.09} & \multicolumn{1}{c}{1.23} 
+\\ \cline{3-5}
+&    & \multicolumn{1}{c}{SVA} & \multicolumn{1}{c}{1.43} & \multicolumn{1}{c}{1.51} \\ 
+\hline
+\multirow{4}{*}{5}  & \multirow{4}{*}{2} 
+& \multicolumn{1}{c}{Exact} & \multicolumn{1}{c}{2.17}  & \multicolumn{1}{c}{2.41}
+\\ \cline{3-5}
+&	 & \multicolumn{1}{c}{Gibbs} & \multicolumn{1}{c}{3.55} & \multicolumn{1}{c}{3.88}
+\\ \cline{3-5}
+&   & \multicolumn{1}{c}{CFVA} & \multicolumn{1}{c}{1.37} & \multicolumn{1}{c}{1.64} 
+\\ \cline{3-5}
+&    & \multicolumn{1}{c}{SVA} & \multicolumn{1}{c}{1.44} & \multicolumn{1}{c}{1.61} \\ 
+\hline
+\multirow{4}{*}{5}  & \multirow{4}{*}{3} 
+& \multicolumn{1}{c}{Exact} & \multicolumn{1}{c}{4.10}  & \multicolumn{1}{c}{4.45}
+\\ \cline{3-5}
+&	 & \multicolumn{1}{c}{Gibbs} & \multicolumn{1}{c}{3.82} & \multicolumn{1}{c}{4.12}
+\\ \cline{3-5}
+&   & \multicolumn{1}{c}{CFVA} & \multicolumn{1}{c}{3.97} & \multicolumn{1}{c}{4.38} 
+\\ \cline{3-5}
+&    & \multicolumn{1}{c}{SVA} & \multicolumn{1}{c}{4.01} & \multicolumn{1}{c}{4.31} \\  
+\hline 
+\end{tabular}
+\caption{Comparison of the factorial HMM on four problems of varying size. The log-likelihood is measured in bits per observation relative to the log-likelihood under the true generative model.}
+\label{tab:xxx}
+\end{table}
 
 \newpage
+
+\begin{figure}[ht] 
+  \begin{subfigure}[b]{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.75\linewidth]{init_fhmm.png} 
+    \caption{Exact} 
+    \label{fig7:a} 
+    \vspace{4ex}
+  \end{subfigure}%% 
+  \begin{subfigure}[b]{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.75\linewidth]{init_gibbs.png} 
+    \caption{Gibbs} 
+    \label{fig7:b} 
+    \vspace{4ex}
+  \end{subfigure} 
+  \begin{subfigure}[b]{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.75\linewidth]{init_cfva.png} 
+    \caption{CFVA} 
+    \label{fig7:c} 
+  \end{subfigure}%%
+  \begin{subfigure}[b]{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.75\linewidth]{init_sva.png} 
+    \caption{SVA} 
+    \label{fig7:d} 
+  \end{subfigure} 
+  \caption{Learning curves for five runs of each of each of the four learning algorithms}
+  \label{fig7} 
+\end{figure}
 
 
 \begin{figure}[h]
