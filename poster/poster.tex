@@ -7,6 +7,8 @@
 \usepackage{graphicx}
 \usepackage[left=1.5cm,right=1.5cm,top=2.5cm,bottom=2.5cm]{geometry}
 
+\pagenumbering{gobble}
+
 \DeclareMathOperator{\ind}{\perp \!\!\! \perp}
 
 
@@ -19,13 +21,27 @@
 \begin{center}
 \resizebox{\linewidth}{!}{\itshape \textbf{Generalization and}}
 \end{center}
-\vspace{50pt}
+\vspace{80pt}
 
 \begin{center}
 \Huge{\textit{Introduction}}
 \end{center}
+\vspace{20pt}
 
+\Large{
+	
+	Hidden Markov Models (HMMs) are widely used for probabilistic models of time series data. Here we used a generalization of HMMs by having observations depending from several parallel hidden Markov models (figure (a)). This factorization leads to a big time improvement when computing the EM algorithm, especially when the HMM has states taking many values.
+	\newline
+	\newline
+	
+	}
 
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\textwidth]{fHMM.png}
+	%\centerline{Factorial Hidden Markov Model}
+	\label{fig:b}
+\end{figure}
 
 
 \newpage
@@ -51,6 +67,10 @@
 \vspace{5pt}
 \begin{center}
 	\LARGE{Matthieu Jedor \& Alban Pierre}
+	\vspace{15pt}
+	
+	\Large{Keywords: Hidden Markov models, time series, EM algorithm, graphical models, Bayesian networks, mean field
+theory}
 \end{center}
 \vspace{30pt}
 \begin{center}
@@ -73,7 +93,7 @@
 \begin{center}
 \resizebox{\linewidth}{!}{\itshape \textbf{using factorial HMMs}}
 \end{center}
-\vspace{50pt}
+\vspace{80pt}
 \begin{center}
 \Huge{\textit{Experiments on real data}}
 \end{center}
