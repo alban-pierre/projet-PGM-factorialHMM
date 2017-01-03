@@ -6,6 +6,7 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{graphicx}
+\usepackage{verbatim}
 \usepackage[left=1.5cm,right=1.5cm,top=2.5cm,bottom=2.5cm]{geometry}
 
 \pagenumbering{gobble}
@@ -109,7 +110,7 @@ TODO add log-likelihood plots and time of computation, and the protocol of exper
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.6\textwidth]{fig11.png}
+	\includegraphics[width=0.8\textwidth]{fig11.png}
 	\centerline{(d) Centers on synthetic data}
 	\label{fig:c}
 \end{figure}
@@ -123,14 +124,27 @@ TODO add log-likelihood plots and time of computation, and the protocol of exper
 	Violet = FHMM, CFVA, SVA (they found the same result)
 	
 	Green = Gibbs sampling
+	
 \end{center}
+\vspace{30pt}
+
+The initialization of parameters is very important. With a random initialization, we achieved poor results as half centers found by our algorithms or less matched the whole data and the other half ended in the middle of nowhere. So we used a recursive K-means initialization, which works as follow : (with $W$ defining the centers : $\mu_t = W*S_t$ ; and $P$ the transition matrix)
+
+\begin{verbatim}
+For m = 1 to M
+     k = kmeans with K centers
+     Superpose each cluster found
+     The m-th set of K columns of W = k
+     The m-th set of K lines of P = probability of clusters k
+endFor
+\end{verbatim}
 
 
 
 
 
 
-\newpage
+\clearpage
 \begin{center}
 \resizebox{\linewidth}{!}{\itshape \textbf{using factorial HMMs}}
 \end{center}
