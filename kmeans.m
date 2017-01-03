@@ -20,11 +20,13 @@ function [k, allk] = kmeans(X, K, epsilon)
     
     D = size(X,1);
     N = size(X,2);
-    k = X(:,randperm(N)(1:K));
+    r = randperm(N);
+    k = X(:,r(1:K));
 
     % Compute a reasonable epsilon if not defined yet
     if (nargin < 3)
-        x = X(:,randperm(N)(1:min(N,5)));
+        r = randperm(N);
+        x = X(:,r(1:min(N,5)));
         avg_dist = sqrt(mean(mean(sqdist(x,x))));
         epsilon = avg_dist / 10000;
     end
@@ -46,7 +48,7 @@ function [k, allk] = kmeans(X, K, epsilon)
             end
         end
         allk = [allk, reshape(k,D*K,1)];
-        stooop++;
+        stooop = stooop+1;
     end
 
     
