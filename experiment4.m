@@ -19,11 +19,12 @@ end
 
 
 d = load('Data2/data.csv');
-days = size(d,1)/96; % 105
+d = reshape(d, 2, 48*15*7);
 
-Y = reshape(d(1:96*20), 2, 20*48);
-Y_test = reshape(d(96*20+(1:96*10)), 2, 10*48);
-Y_test2 = reshape(d(96*30+(1:96*10)), 2, 10*48);
+
+
+Y = d(:,1:48*10);
+Y_test = d(:, 48*20+(1:48*10));
 
 
 K = 2;
@@ -61,7 +62,13 @@ for i=1:K^M
     plot(mu(1,i), mu(2,i), 'ko', 'MarkerSize',10+round(p(1,i)*200),'LineWidth',1);
 end
 plot(mu(1,:), mu(2,:), 'rx', 'MarkerSize',15,'LineWidth',3);
-    
+
+
+
 
 LL = loglikelihood(Y_test,W,C,P,Pi)
-LL2 = loglikelihood(Y_test2,W,C,P,Pi)
+
+figure(2)
+plot(1:size(ll,2), ll)
+hold on;
+plot(size(ll,2), LL)
