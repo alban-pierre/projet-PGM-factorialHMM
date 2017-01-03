@@ -107,9 +107,9 @@ theory}
 	
 %}
 
-%TODO add log-likelihood plots and time of computation, and the protocol of experimentations
+% TODO add log-likelihood plots and time of computation, and the protocol of experimentations
 
-Here, we generate synthetic datasets using a factorial hidden Markov model and then we tried to learn the parameters with our 4 algorithms. The data were generated from a factorial HMM structure with M Markov chains and each of the state variables could take K discrete values. We choose $C$ to be a multiple of the identity matrix $C = 0.01 I$. The other parameters were sampled from a uniform $[0,1]$ distribution and the transition matrix and priors were then normalized to satisfy the sum-to-one constraints. The training and test sets consisted of 200 Gaussian vector with dimension 2. 
+Here, we generate synthetic datasets using a factorial hidden Markov model and then we tried to learn the parameters with our 4 algorithms. The data were generated from a factorial HMM structure with M Markov chains and each of the state variables could take K discrete values. We choose $C$ to be a multiple of the identity matrix $C = 0.01 I$. W was sampled from a standard normal distribution and the other parameters from a uniform $[0,1]$ distribution and the transition matrix and priors were then normalized to satisfy the sum-to-one constraints. The training and test sets consisted of 200 Gaussian vector with dimension 2. 
 
 Table 1 shows the results averaged over 15 runs for each algorithms on each of the four problem sizes. 
 
@@ -194,7 +194,6 @@ Table 1 shows the results averaged over 15 runs for each algorithms on each of t
 \end{figure}
 
 \begin{minipage}{0.55\linewidth}
-	
 		\centering
 		\includegraphics[width=0.6\textwidth]{fig11.png}
 		\centerline{\large{(d) Centers for synthetic data}}
@@ -219,7 +218,7 @@ Table 1 shows the results averaged over 15 runs for each algorithms on each of t
 
 \vspace{5pt}
 
-The initialization of parameters is very important. With a random initialization, we achieved poor results as half centers found by our algorithms or less matched the whole data and the other half ended in the middle of nowhere. So we used a recursive K-means initialization, which works as follow : (with $W$ defining the centers : $\mu_t = W*S_t$ ; and $P$ the transition matrix)
+The initialization of parameters is crucial. With a random initialization, we achieved poor results as half centers found by our algorithms or less matched the whole data and the other half ended in the middle of nowhere. So we used a recursive K-means initialization, which works as follow : (with $W$ defining the centers : $\mu_t = W*S_t$ ; and $P$ the transition matrix)
 
 \large{
 \begin{verbatim}
@@ -246,7 +245,7 @@ For m = 1 to M
 \vspace{20pt}
 
 \Large{
-We applied the structural variational approximation on real data. First we choose the dataset "Activity Recognition from Single Chest-Mounted Accelerometer Data Set" from UCI Repository, which records the acceleration of persons during different activities such as walking, going up/down stairs or working at computer. We tried to learn parameters of each of theses activities, and then for a new activity we compute the log-likelihood of each set of parameters, and the set of parameters that gave the biggest log-likelihood would be the recognized activity. In practice the data is not separated in several gaussians (figure (e)) so it performs very bad at recognizing activities.
+We applied the structural variational approximation on real data. First we choose the dataset "Activity Recognition from Single Chest-Mounted Accelerometer Data Set" from UCI Repository, which records the acceleration of persons during different activities such as walking, going up/down stairs or working at computer. We tried to learn parameters of each of theses activities, and then for a new activity we compute the log-likelihood of each set of parameters, and the set of parameters that gave the biggest log-likelihood would be the recognized activity. In practice the data is not separated in several gaussians (figure (e)) so it performs poorly at recognizing activities.
 }
 \begin{figure}[h]
 	\centering
