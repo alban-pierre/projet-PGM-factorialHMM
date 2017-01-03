@@ -2,8 +2,6 @@
 % Counts Data Set" from UCI Repository is needed
 % The files "Data2/data.csv" must exist
 
-% It fails miserably
-
 % Variable that is 1 if we use matlab, and 0 otherwise
 isMatlab = exist('OCTAVE_VERSION', 'builtin') == 0;
 
@@ -21,21 +19,23 @@ end
 dat = load('Data2/data.csv');
 dat = reshape(dat, 2, 48*15*7);
 
-% Remove the big amount of (0,0) points
-dat = dat(:,sum(dat,1)>0.5);
 
-Y = dat(:,1:48*20);
-Y_test = dat(:, 48*20+(1:48*20));
+Y = dat(:,1:48*50);
+Y_test = dat(:, 48*50+(1:48*50));
+
+% Remove the big amount of (0,0) points
+Y = Y(:,sum(Y,1)>0.5);
+Y_test = Y_test(:,sum(Y_test,1)>0.5);
 
 
 K = 3;
-M = 3;
+M = 2;
 maxIter = 100;
 epsilon = 1e-4;
 
 
 [W0, P0, C0] = recursive_kmeans_init(Y, M, K);
-[W,C,P,Pi,ll] = em_fhmm(Y,K,M,maxIter,epsilon,W0,P0,C0);
+[W,C,P,Pi,ll] = em_sva(Y,K,M,maxIter,epsilon,W0,P0,C0);
 
 
 % 2D plot of points
@@ -63,7 +63,6 @@ for i=1:K^M
     plot(mu(1,i), mu(2,i), 'ko', 'MarkerSize',10+round(p(1,i)*200),'LineWidth',1);
 end
 plot(mu(1,:), mu(2,:), 'rx', 'MarkerSize',15,'LineWidth',3);
-
 
 
 
