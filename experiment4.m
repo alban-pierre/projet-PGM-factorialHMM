@@ -18,22 +18,23 @@ else
 end
 
 
-d = load('Data2/data.csv');
-d = reshape(d, 2, 48*15*7);
+dat = load('Data2/data.csv');
+dat = reshape(dat, 2, 48*15*7);
+
+% Remove the big amount of (0,0) points
+dat = dat(:,sum(dat,1)>0.5);
+
+Y = dat(:,1:48*20);
+Y_test = dat(:, 48*20+(1:48*20));
 
 
-
-Y = d(:,1:48*10);
-Y_test = d(:, 48*20+(1:48*10));
-
-
-K = 2;
+K = 3;
 M = 3;
 maxIter = 100;
 epsilon = 1e-4;
 
 
-[W0, P0, C0] = recursive_kmeans_init(Y, M, K); % sometimes it fails because too many points are exactly the same
+[W0, P0, C0] = recursive_kmeans_init(Y, M, K);
 [W,C,P,Pi,ll] = em_fhmm(Y,K,M,maxIter,epsilon,W0,P0,C0);
 
 
