@@ -7,7 +7,7 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{verbatim}
-\usepackage[left=1.5cm,right=1.5cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage[left=1.5cm,right=1.5cm,top=2.5cm,bottom=2cm]{geometry}
 
 \usepackage{float}
 \usepackage{multirow}
@@ -189,42 +189,47 @@ Table 1 shows the results averaged over 15 runs for each algorithms on each of t
     \caption{SVA} 
     \label{fig7:d} 
   \end{subfigure} 
-  \caption{Learning curves for five runs of each of each of the four learning algorithms}
+  \caption{Learning curves for five runs of each of the four learning algorithms}
   \label{fig7} 
 \end{figure}
 
+\begin{minipage}{0.55\linewidth}
+	
+		\centering
+		\includegraphics[width=0.6\textwidth]{fig11.png}
+		\centerline{\large{(d) Centers for synthetic data}}
+		\label{fig:c}
+	
+\end{minipage}\hfill
+\begin{minipage}{0.4\linewidth}
+		\normalsize{
+			Cross = centers
+			
+			Circles = probabilities of each center
+			
+			Blue = True parameters
+			
+			Light Blue = Kmeans Initialization
+			
+			Violet = FHMM, CFVA, SVA (they found the same result)
+			
+			Green = Gibbs sampling
+		}
+\end{minipage}
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.8\textwidth]{fig11.png}
-	\centerline{\Large{(d) Centers for synthetic data}}
-	\label{fig:c}
-\end{figure}
-\begin{center}
-	Cross = centers, Circles = probabilities of each center
-	
-	Blue = True parameters
-	
-	Light Blue = Kmeans Initialization
-	
-	Violet = FHMM, CFVA, SVA (they found the same result)
-	
-	Green = Gibbs sampling
-	
-\end{center}
-\vspace{30pt}
+\vspace{5pt}
 
 The initialization of parameters is very important. With a random initialization, we achieved poor results as half centers found by our algorithms or less matched the whole data and the other half ended in the middle of nowhere. So we used a recursive K-means initialization, which works as follow : (with $W$ defining the centers : $\mu_t = W*S_t$ ; and $P$ the transition matrix)
 
+\large{
 \begin{verbatim}
 For m = 1 to M
      k = kmeans with K centers
      Superpose each cluster found
      The m-th set of K columns of W = k
      The m-th set of K lines of P = probabilities of clusters k
-endFor
 \end{verbatim}
-
+}
 
 
 
@@ -240,8 +245,9 @@ endFor
 \end{center}
 \vspace{20pt}
 
+\Large{
 We applied the structural variational approximation on real data. First we choose the dataset "Activity Recognition from Single Chest-Mounted Accelerometer Data Set" from UCI Repository, which records the acceleration of persons during different activities such as walking, going up/down stairs or working at computer. We tried to learn parameters of each of theses activities, and then for a new activity we compute the log-likelihood of each set of parameters, and the set of parameters that gave the biggest log-likelihood would be the recognized activity. In practice the data is not separated in several gaussians (figure (e)) so it performs very bad at recognizing activities.
-
+}
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.7\textwidth]{standing.png}
