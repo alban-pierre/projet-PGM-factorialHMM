@@ -1,0 +1,107 @@
+\documentclass[10pt,a4paper]{report}
+\usepackage[latin1]{inputenc}
+%\usepackage[utf8x]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[left=1.5cm,right=1.5cm,top=2.5cm,bottom=2.5cm]{geometry}
+
+\DeclareMathOperator{\ind}{\perp \!\!\! \perp}
+
+
+
+% Le document est sur 6 pages organisées comme ci-dessous :
+% 1 3 5
+% 2 4 6
+\begin{document}
+
+\begin{center}
+\resizebox{\linewidth}{!}{\itshape \textbf{Generalization and}}
+\end{center}
+\vspace{50pt}
+
+\begin{center}
+\Huge{\textit{Introduction}}
+\end{center}
+
+
+
+
+\newpage
+\begin{center}
+\Huge{\textit{The models}}
+\end{center}
+
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+\begin{center}
+\resizebox{\linewidth}{!}{\itshape \textbf{acceleration of HMMs}}
+\end{center}
+\vspace{5pt}
+\begin{center}
+	\LARGE{Matthieu Jedor \& Alban Pierre}
+\end{center}
+\vspace{30pt}
+\begin{center}
+\Huge{\textit{Experiments on synthetic data}}
+\end{center}
+
+\newpage
+-
+
+
+
+
+
+
+
+
+
+
+\newpage
+\begin{center}
+\resizebox{\linewidth}{!}{\itshape \textbf{using factorial HMMs}}
+\end{center}
+\vspace{50pt}
+\begin{center}
+\Huge{\textit{Experiments on real data}}
+\end{center}
+
+\newpage
+-
+
+
+
+
+
+\iffalse
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1.0\textwidth]{P2.png}
+	\centerline{Paramètres utilisés pour calculer les probabilités des états cachés}
+	\label{fig:b}
+\end{figure}
+
+
+\begin{tabular}{lcc}
+	& Entrainement & Test \\
+	EM mixture de gaussiennes & -2371 & -2453 \\
+	EM chaine de Markov cachée & -1899 & -1957 \\
+\end{tabular}
+\newline
+
+\fi
+
+\end{document}
