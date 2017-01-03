@@ -111,7 +111,7 @@ TODO add log-likelihood plots and time of computation, and the protocol of exper
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.8\textwidth]{fig11.png}
-	\centerline{(d) Centers on synthetic data}
+	\centerline{\Large{(d) Centers on synthetic data}}
 	\label{fig:c}
 \end{figure}
 \begin{center}
@@ -152,9 +152,19 @@ endFor
 \begin{center}
 \Huge{\textit{Experiments on real data}}
 \end{center}
+\vspace{20pt}
+
+We applied the structural variational approximation on real data. First we choose the dataset "Activity Recognition from Single Chest-Mounted Accelerometer Data Set" from UCI Repository, which records the acceleration of persons during different activities such as walking, going up/down stairs or working at computer. We tried to learn parameters of each of theses activities, and then for a new activity we compute the log-likelihood of each set of parameters, and the set of parameters that gave the biggest log-likelihood would be the recognized activity. In practice the data is not separated in several gaussians (figure (e)) so it performs very bad at recognizing activities.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\textwidth]{standing.png}
+	\centerline{\Large{Example of data from the Single Chest-Mounted Accelerometer Data Set}}
+	\label{fig:e}
+\end{figure}
 
 \newpage
--
+Then we tried another dataset : CalIt2 Building People Counts Data Set, which counts the number of persons that come in and out of a building.
 
 
 
