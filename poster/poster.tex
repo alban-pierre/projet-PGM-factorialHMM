@@ -43,7 +43,7 @@
 	\centering
 	\includegraphics[width=0.6\textwidth]{fHMM.png}
 	%\centerline{Factorial Hidden Markov Model}
-	\label{fig:b}
+	\label{fig:a}
 \end{figure}
 
 
@@ -98,18 +98,32 @@ theory}
 \end{center}
 \vspace{20pt}
 \Large{
-	We generate synthetic datasets using a factorial hidden Markov model and then we tried to learn the parameters with our 4 algorithms. Figure 1 shows the log-likelihood accross iterations and figure 2 shows the results in terms of centers found.
+	We generate synthetic datasets using a factorial hidden Markov model and then we tried to learn the parameters with our 4 algorithms. Figure 1 shows the log-likelihood accross iterations and figure (d) shows the results in terms of centers found.
 	
 }
 
 TODO add log-likelihood plots and time of computation, and the protocol of experimentations
 
 \newpage
--
 
 
-
-
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.6\textwidth]{fig11.png}
+	\centerline{(d) Centers on synthetic data}
+	\label{fig:c}
+\end{figure}
+\begin{center}
+	Cross = centers, Circles = probabilities of each center
+	
+	Blue = True parameters
+	
+	Light Blue = Kmeans Initialization
+	
+	Violet = FHMM, CFVA, SVA (they found the same result)
+	
+	Green = Gibbs sampling
+\end{center}
 
 
 
@@ -138,7 +152,7 @@ TODO add log-likelihood plots and time of computation, and the protocol of exper
 	\centering
 	\includegraphics[width=1.0\textwidth]{P2.png}
 	\centerline{Paramètres utilisés pour calculer les probabilités des états cachés}
-	\label{fig:b}
+	\label{fig:d}
 \end{figure}
 
 
