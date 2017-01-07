@@ -1,0 +1,104 @@
+\documentclass{article}
+
+% if you need to pass options to natbib, use, e.g.:
+% \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading nips_2016
+%
+% to avoid loading the natbib package, add option nonatbib:
+% \usepackage[nonatbib]{nips_2016}
+
+\usepackage[final]{nips_2016}
+
+% to compile a camera-ready version, add the [final] option, e.g.:
+% \usepackage[final]{nips_2016}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+
+\usepackage{amsmath,amssymb}
+
+\title{Factorial Hidden Markov Models}
+
+% The \author macro works with any number of authors. There are two
+% commands used to separate the names and addresses of multiple
+% authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to
+% break the lines. Using \AND forces a line break at that point. So,
+% if LaTeX puts 3 of 4 authors names on the first line, and the last
+% on the second line, try using \AND instead of \And before the third
+% author name.
+
+\author{
+  Matthieu Jedor\\
+  École Normale Supérieur Paris Saclay\\
+  \texttt{matthieu.jedor@ens-paris-saclay.fr} \\
+  %% examples of more authors
+   \And
+   Alban Pierre \\
+   École Normale Supérieur \\
+   \texttt{alban.pierre@ens.fr} \\
+}
+
+\begin{document}
+% \nipsfinalcopy is no longer used
+
+\maketitle
+
+\begin{abstract}
+  Hidden Markov models (HMMs) is one of the most used tools for learning probabilistic models of time series data. In an HMM, information about the past are pass along trough a single discrete variable, the hidden state. We discuss a generalization of HMMs in which the state is factored into multiple state variables and is therefore represented in a distributed manner. We describe an exact algorithm for inferring the posterior the posterior probabilities of the hidden state variables given the observations along with other approximate inference algorithms such that Gibbs sampling or variational methods. Finally, we test our algorithms on synthetic and real dataset.
+\end{abstract}
+
+\section{Introduction}
+% Rappel HMM
+
+\section{The probabilistic model}
+We generalize the HMM state representation by representing the state as a collection of state variables:
+\[ S_t = (S_t^{(1)},\dots,S_t^{(M)}) \]
+each of which can take $K^{(m)}$ values. We refer to these models as \emph{factorial hidden Markov models}, as the state space consists of the cross product of these state variables.In this paper, we consider the case where $K^{(m)} = K$ for all $m$ and we focus on factorial HMMs in which each state variable is \emph{a priori} uncoupled from the other state variables:
+\begin{equation} 
+P(S_{t+1}|S_t) = \prod_{m=1}^M P(S_{t+1}^{(m)}|S_t^{(m)}) 
+\end{equation}
+The transition structure for this model can be represented by $M$ distinct $K \times K$ matrices.
+
+In a factorial HMM, the observation at time $t$ depend on all the state variables at that time step, therefore we represent the observation $Y_t$ as a Gaussian random vector whose mean is a linear function of the state variables. Representing the state variables as $K \times 1$ vectors, where each of the $K$ discrete values corresponds to a 1 in one position and 0 elsewhere, the probability density for a $D \times 1$ observation vector $Y_t$ is given by:
+\begin{equation}
+P(Y_t|S_t) = (2 \pi)^{-D/2} \left| C \right|^{-1/2} \exp \left( -\frac{1}{2} (Y_t - \mu_t)^\intercal C^{-1} (Y_t - \mu_t) \right)
+\end{equation}  
+where $\mu_t = \sum_{m=1}^M W^{(m)} S_t^{(m)}$, each $W^{(m)}$ is a $D \times K$ matrix whose columns are the contributions to the means for each of the settings of $S_t^{(m)}$, $C$ is the $D \times D$ covariance matrix and $\left| \cdot \right|$ is the matrix determinant operator.
+
+The hidden state variables at one time step, although marginally independent, become conditionally dependent given the observation sequence. By equation ??, the posterior probability of each of the settings of the hidden state variables is proportional to the probability of $Y_t$ under a Gaussian with mean $\mu_t$. Since $\mu_t$ is a function of all the state variables, the probability of a setting of one of the state variables will depend on the setting of the other state variables. This dependency effectively couples all of the hidden state variables for the purposes of calculating posterior probabilities and makes exact inference intractable for the factorial HMM.
+
+\section{Inference and learning}
+
+\subsection{The EM algorithm}
+
+\subsection{Exact inference	}
+
+\subsection{Inference using Gibbs sampling}
+
+\subsection{Completely factorized variational inference}
+
+\subsection{Structured variational inference}
+
+\section{Experimental results}
+
+\subsection{Experiments on synthetic data}
+
+\subsection{Experiments on real data}
+
+\section{Conclusion}
+
+\section*{References}
+
+\small
+
+[1] Z. Ghahramani and M. I. Jordan, ``Factorial Hidden Markov Models'', \it{Machine Learning}, vol. 29, pp. 245-273, 1997.
+
+\end{document}
