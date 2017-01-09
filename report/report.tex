@@ -37,12 +37,12 @@
 
 \author{
   Matthieu Jedor\\
-  École Normale Supérieur Paris Saclay\\
+  École Normale Supérieure Paris Saclay\\
   \texttt{matthieu.jedor@ens-paris-saclay.fr} \\
   %% examples of more authors
    \And
    Alban Pierre \\
-   École Normale Supérieur \\
+   École Normale Supérieure \\
    \texttt{alban.pierre@ens.fr} \\
 }
 
@@ -77,13 +77,35 @@ The hidden state variables at one time step, although marginally independent, be
 
 \section{Inference and learning}
 
+The inference problem in a probabilistic graphical model consists of computing the probabilities of the hidden variables given the observations.
+
+The learning problem for probabilistic models is compose of two parts. The first part is to learn the structure of a model and the other part is to learn its parameters. Here we only consider the second case, i.e.\ the problem of learning the parameters for a given structure. 
+
 \subsection{The EM algorithm}
+
+The parameters of a factorialHMM can be estimated via the expectation maximization (EM) algorithm. This algorithm is compose of two steps. The first step, also called E step, computes posterior probabilities over the hidden states with the current parameters and the second step, also called the M step, uses these probabilities to maximize the expected log-likelihood of the observations as a function of the parameters.
+
+For the factorial HMM, the parameters of the model are $\phi = \{ W^{(m)}, \pi^{(m)}, P^{(m)}, C \}$ where $\pi^{(m)} = P(S_1^{(m)})$ and $P^{(m)} = P(S_t^{(m)} | S_{t-1}^{(m)})$. 
+
+As in HMMs, the exact M step for factorial HMMs is simple and tractable. We now focus on the more difficult problem of computing the expectation.
 
 \subsection{Exact inference	}
 
+% Forward-Backward algorithm
+
 \subsection{Inference using Gibbs sampling}
 
+The main idea is to approximate the posterior probabilities using a Monte Carlo sampling procedure. Here we consider Gibbs sampling. For a given observation sequence $\{Y_t\}$, we begin with a random setting of the hidden states $\{S_t\}$. At each step of the sampling process, each state vector is updated stochastically according to its probability distribution conditioned on the setting of all the other state vectors.
+\begin{align*}
+S_t^{(m)} \textnormal{ sampled from } & P(S_t^{(m)} | \{S_t^{(n)} | n \ne m \}, S_{t-1}^{(m)}, S_{t+1}^{(m)}, Y_t) \\
+\propto & P(S_t^{(m)} | S_{t-1}^{(m)}) P(S_{t+1}^{(m)} | S_{t}^{(m)}) P(Y_t | S_{t}^{(1)}, \dots, S_{t}^{(M)})
+\end{align*}
+
+One step of the sampling procedure results in a new sample and require $\mathcal{O}(TMK)$ operations. Gibbs sampling defines a Markov chain over the state space and if all probabilities are away from zero, this Markov chain is guaranteed to converge to the posterior probabilities.
+
 \subsection{Completely factorized variational inference}
+
+The main idea here is to approximate the posterior distribution by a tractable distribution and make the assumption that the state variables are independent given the observations.
 
 \subsection{Structured variational inference}
 
