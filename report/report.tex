@@ -36,8 +36,8 @@
 % author name.
 
 \author{
-  Matthieu Jedor\\
-  École Normale Supérieure Paris Saclay\\
+  Matthieu Jedor \\
+  École Normale Supérieure Paris Saclay \\
   \texttt{matthieu.jedor@ens-paris-saclay.fr} \\
   %% examples of more authors
    \And
@@ -56,7 +56,6 @@
 \end{abstract}
 
 \section{Introduction}
-% Rappel HMM
 
 \section{The probabilistic model}
 We generalize the HMM state representation by representing the state as a collection of state variables:
@@ -69,7 +68,7 @@ The transition structure for this model can be represented by $M$ distinct $K \t
 
 In a factorial HMM, the observation at time $t$ depend on all the state variables at that time step, therefore we represent the observation $Y_t$ as a Gaussian random vector whose mean is a linear function of the state variables. Representing the state variables as $K \times 1$ vectors, where each of the $K$ discrete values corresponds to a 1 in one position and 0 elsewhere, the probability density for a $D \times 1$ observation vector $Y_t$ is given by:
 \begin{equation}
-P(Y_t|S_t) = (2 \pi)^{-D/2} \left| C \right|^{-1/2} \exp \left( -\frac{1}{2} (Y_t - \mu_t)^\intercal C^{-1} (Y_t - \mu_t) \right)
+P(Y_t|S_t) = (2 \pi)^{-D/2} \left| C \right|^{-1/2} \exp \left( -\frac{1}{2} (Y_t - \mu_t)^\mathsf{T} C^{-1} (Y_t - \mu_t) \right)
 \end{equation}  
 where $\mu_t = \sum_{m=1}^M W^{(m)} S_t^{(m)}$, each $W^{(m)}$ is a $D \times K$ matrix whose columns are the contributions to the means for each of the settings of $S_t^{(m)}$, $C$ is the $D \times D$ covariance matrix and $\left| \cdot \right|$ is the matrix determinant operator.
 
@@ -89,9 +88,9 @@ For the factorial HMM, the parameters of the model are $\phi = \{ W^{(m)}, \pi^{
 
 As in HMMs, the exact M step for factorial HMMs is simple and tractable. We now focus on the more difficult problem of computing the expectation.
 
-\subsection{Exact inference	}
-
+\subsection{Exact inference}
 % Forward-Backward algorithm
+
 
 \subsection{Inference using Gibbs sampling}
 
@@ -105,7 +104,20 @@ One step of the sampling procedure results in a new sample and require $\mathcal
 
 \subsection{Completely factorized variational inference}
 
-The main idea here is to approximate the posterior distribution by a tractable distribution and make the assumption that the state variables are independent given the observations.
+The main idea here is to approximate the posterior distribution over the hidden variables $P(\{S_t\}|\{Y_t\})$ by a tractable distribution $Q(\{S_t\})$ and make the assumption that the state variables are independent given the observations. Thus $Q$ can therefore be written as:
+\[ Q(\{S_t\}|\theta) = \prod_{t=1}^T \prod_{m=1}^M Q(S_t^{(m)}|\theta_t^{(m)}) \]
+where the variational parameters $\theta = \{ \theta_t^{(m)} \}$ are the means of the state variables. Therefore, representing the state variables as a $K$-dimensional vector, the elements of the vector $\theta_t^{(m)}$ define the state occupation probabilities for the multinomial variable $S_t^{(m)}$ under the distribution $Q$:
+\[ Q(S_t^{(m)}|\theta_t^{(m)}) = \prod_{k=1}^K \left( \theta_{t,k}^{(m)} \right)^{S_{t,k}^{(m)}} \]
+
+Minimizing the KL divergence, one obtains:
+\begin{equation}
+\theta_t^{(m) \ \textnormal{new}} = \varphi\{ W^{(m)^\mathsf{T}} C^{-1} \widetilde{Y}_t^{(m)} - \frac{1}{2} \Delta^{(m)} + \log(P^{(m)}) \theta_{t-1}^{(m)} + \log(P^{(m)})^\mathsf{T} \theta_{t+1}^{(m)} \}
+\end{equation}
+where $\widetilde{Y}_t^{(m)} = Y_t - \sum_{l \ne m}^M W^{(l)} \theta_t^{(l)}$, $\Delta^{(m)}$is the vector of diagonal elements of $W^{(m)^\mathsf{T}} C^{-1} W^{(m)}$ and $\varphi$ is the softmax operator.
+
+Although the posterior distribution over the hidden variables is approximated with a completely factorized distribution, we still have dependencies forward and backward in time. These dependencies come from the fact that at each time step, the Markov chains are stochastically coupled
+
+Each hidden state is updated using ?? with a time complexity of $\mathcal{O}(T M K^2)$ per iteration. The convergence of this procedure is determined by the convergence of the KL divergence in the variational distribution between successive time steps.
 
 \subsection{Structured variational inference}
 
@@ -124,3 +136,4 @@ The main idea here is to approximate the posterior distribution by a tractable d
 [1] Z. Ghahramani and M. I. Jordan, ``Factorial Hidden Markov Models'', \it{Machine Learning}, vol. 29, pp. 245-273, 1997.
 
 \end{document}
+
