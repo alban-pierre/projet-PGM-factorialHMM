@@ -121,6 +121,18 @@ Each hidden state is updated using ?? with a time complexity of $\mathcal{O}(T M
 
 \subsection{Structured variational inference}
 
+As previously, we approximate the posterior distribution over the hidden variables but instead of assuming that all the states variables are independent, we approximate the factorial HMM by $M$ uncoupled HMMs. Thus the structured variational approximation can be written as:
+\[ Q(\{ S_t \}| \theta) = \frac{1}{Z_Q} \prod_{m=1}^M Q( S_1^{(m)} | \theta) \prod_{t=2}^T Q(S_t^{(m)} | S_{t-1}^{(m)}, \theta) \]
+where $Z_Q$ is a normalization term, $Q( S_1^{(m)} | \theta)= \prod_{k=1}^K \left( h_{1,k}^{(m)} \pi_k^{(m)} \right)^{S_{1,k}^{(m)}}$ and $Q(S_t^{(m)} | S_{t-1}^{(m)}, \theta)= \prod_{k=1}^K \left( h_{t,k}^{(m)} \prod_{j=1}^K (P_{k,j}^{(m)})^{S_{t-1,j}^{(m)}} \right)^{S_{t,k}^{(m)}}$, where $h_t^{(m)}$ is a time-varying bias for each state variable.
+
+Minimizing the KL divergence as a function of $h_t^{(m)}$, one obtains:
+\begin{equation}
+h_t^{(m) \ \textnormal{new}} = \exp\{ W^{(m)^\mathsf{T}} C^{-1} \widetilde{Y}_t^{(m)} - \frac{1}{2} \Delta^{(m)} \}
+\end{equation}
+where $\Delta^{(m)}$ is defined as before and the residual error is $\widetilde{Y}_t^{(m)} = Y_t - \sum_{l \ne m}^M W^{(l)} \langle S_t^{(l)} \rangle$.
+
+The parameter $h_t^{(m)}$ obtained from these fixed point equations is the observation probability associated with the state variable $S_t^{(m)}$. Using these probabilities, the forward–backward algorithm is used to compute a new set of expectations for $\langle S_t^{(m)} \rangle$.
+
 \section{Experimental results}
 
 \subsection{Experiments on synthetic data}
