@@ -108,7 +108,12 @@ function [W,C,P,Pi,LL,aLL,time] = em_sva(Y,K,M,maxIter,epsilon,W0,P0,C0)
         
         % M step
         Pi = reshape(ESt(1,:),[K,M])';
-        W = sum1 * pinv(sum2);
+        
+        % W = sum1 * pinv(sum2);
+        [U,S,V] = svd(sum2);
+        temp = 1./diag(S) .* (diag(S) > 0.001);
+        W = sum1 * V * diag(temp) * U';
+        
         C = Y*Y'/T - 1/T * sum1 * W';
         C = (C+C')/2; % Make sure C is symmetric because of small computations errors
         while det(C) <= 0 % Make sure C is PSD
