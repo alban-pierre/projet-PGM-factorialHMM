@@ -27,6 +27,8 @@
 \usepackage{graphicx}
 \usepackage{subcaption}
 
+\DeclareMathOperator{\Tr}{Tr}
+
 \title{Factorial Hidden Markov Models}
 
 % The \author macro works with any number of authors. There are two
@@ -231,6 +233,30 @@ All algorithms are highly sensitive to initialization, different runs on the tra
 \small
 
 [1] Z. Ghahramani and M. I. Jordan, ``Factorial Hidden Markov Models'', \it{Machine Learning}, vol. 29, pp. 245-273, 1997.
+
+\appendix
+
+\section{The M step}
+
+In our model, the log-likelihood is given by:
+\begin{align*}
+\ell = &-\frac{1}{2} \sum_{t=1}^T \Bigg[Y_t^\mathsf{T} C^{-1} Y_t - 2 \sum_{m=1}^M Y_t^\mathsf{T} C^{-1} W^{(m)} \langle S_t^{(m)} \rangle + \sum_{m=1}^M \sum_{n=1}^M \Tr\bigg\{ W^{(m)^\mathsf{T}} C^{-1} W^{(m)} \langle S_{t-1}^{(m)} S_{t}^{(m)^\mathsf{T}} \rangle \bigg\} \Bigg] \\
+&+ \sum_{m=1}^M \langle S_1^{(m)^\mathsf{T}} \rangle \log \pi^{(m)} + \sum_{t=2}^T \sum_{m=1}^M \Tr\Big\{ \log P^{(m)} \langle S_{t-1}^{(m)} S_{t}^{(m)^\mathsf{T}} \rangle \Big\} - \log Z
+\end{align*} 
+where Z is a normalization term.
+
+We assume $Y_t$ is a $D \times 1$ vector and we let $S_t$ be the $MK \times 1$ vector obtained by concatenating the $S^{(m)}$ vectors and $W$ be the $D \times MK$ matrix obtained by concatenating the $W^{(m)}$ matrices (of size $D \times K$). Setting the derivatives of $\ell$ with respect to the different parameters to zero, we obtain the following results
+
+\[ W^\textnormal{new} = \Bigg( \sum_{t=1}^T Y_t \langle S_{t}^\mathsf{T} \rangle \Bigg) \Bigg( \sum_{t=1}^T \langle S_{t} S_{t}^\mathsf{T} \rangle \Bigg)^\dagger \qquad \pi^{(m) \ \textnormal{new}} = \langle S_{1}^{(m)}  \rangle\]
+
+\[ P_{i,j}^{(m) \ \textnormal{new}} = \frac{\sum_{t=2}^T \langle S_{t,i}^{(m)} S_{t-1,j}^{(m)}  \rangle}{\sum_{t=2}^T \langle S_{t-1,j}^{(m)}  \rangle} \qquad C^{\textnormal{new}} = \frac{1}{T} \sum_{t=1}^T Y_t Y_t^\mathsf{T} - \frac{1}{T} \sum_{t=1}^T \sum_{m=1}^M W^{(m)} \langle S_t^{(m)} Y_t^\mathsf{T} \rangle \]
+where $\dagger$ is the Moore-Penrose pseudo-inverse.
+
+\section{Exact forward-backward algorithm}
+
+\section{Completely factorized variational approximation}
+
+\section{Structured approximation}
 
 \end{document}
 
