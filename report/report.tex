@@ -96,7 +96,7 @@ As in HMMs, the exact M step for factorial HMMs is simple and tractable. We now 
 
 \subsection{Exact inference}
 % Forward-Backward algorithm
-
+$\mathcal{O}(T M K^{M+1})$
 
 \subsection{Inference using Gibbs sampling}
 
@@ -253,6 +253,40 @@ We assume $Y_t$ is a $D \times 1$ vector and we let $S_t$ be the $MK \times 1$ v
 where $\dagger$ is the Moore-Penrose pseudo-inverse.
 
 \section{Exact forward-backward algorithm}
+
+Here we describe an exact forward-backward recursion which uses the independence of the Markov chains. Recall that $\phi$ denote the parameters of our model and using the notation $\{ Y_\tau \}_t^r$ to mean the observation sequence $Y_t,\dots,Y_r$, we define:
+\begin{align*}
+\alpha_t &= P(S_t^{(1)},\dots,S_t^{(M)}, \{Y_\tau \}_1^t | \phi) \\
+\alpha_t^{(0)} &= P(S_t^{(1)},\dots,S_t^{(M)}, \{Y_\tau \}_1^{t-1} | \phi) \\
+\alpha_t^{(1)} &= P(S_{t-1}^{(1)},\dots,S_t^{(M)}, \{Y_\tau \}_1^{t-1} | \phi) \\
+&\vdots \\
+\alpha_t^{(M)} &= P(S_t{t-1}^{(1)},\dots,S_{t-1}^{(M)}, \{Y_\tau \}_1^{t-1} | \phi)
+\end{align*}
+
+Then we obtain the forward recursions:
+\[ \alpha_t = P(Y_t | S_t^{(1)},\dots,S_t^{(M)}, \phi) \alpha_t^{(0)} \qquad \alpha_t^{(m-1)} = \sum_{S_{t-1}^{(m)}} P(S_t^{(m)} | S_{t-1}^{(m)}) \alpha_t^{(m)} \]
+
+Similarly for the backward recursions we define:
+\begin{align*}
+\beta_t &= P(\{Y_\tau \}_{t+1}^T | S_t^{(1)},\dots,S_t^{(M)}, \phi) \\
+\beta_{t-1}^{(M)} &= P(\{Y_\tau \}_{t}^T | S_t^{(1)},\dots,S_t^{(M)}, \phi) \\
+&\vdots \\ 
+\beta_{t-1}^{(1)} &= P(\{Y_\tau \}_{t}^T | S_t^{(1)}, S_{t-1}^{(1)}, \dots,S_{t-1}^{(M)}, \phi) \\
+\beta_{t-1}^{(0)} = \beta_{t-1}
+\end{align*}
+
+And obtain:
+\[ \beta_{t-1}^{(M)} = P(Y_t | S_t^{(1)},\dots,S_t^{(M)}, \phi) \beta_t \qquad \beta_{t-1}^{(m-1)} = \sum_{S_{t}^{(m)}} P(S_t^{(m)} | S_{t-1}^{(m)}) \beta_{t-1}^{(m)} \]
+
+Then the posterior probability of the state at time t is given by:
+\[ \gamma_t = \frac{\alpha_t \beta_t}{\sum_{S_t} \alpha_t \beta_t} \]
+
+Using $\alpha_t$, $\beta_t$ and $\gamma_t$, the quantities required for the M step are given by:
+\begin{align*}
+\langle S_t^{(m)} \rangle &= \sum_{S_t^{(n)} (n \ne m)} \gamma_t \\
+\langle S_t^{(m)} S_t^{(n)^\mathsf{T}} \rangle &= \sum_{S_t^{(n)} (r \ne m,n)} \gamma_t \\
+\langle S_{t-1}^{(m)} S_t^{(m)^\mathsf{T}} \rangle &= \frac{\sum_{S_{t-1}^{(n)},S_t^{(r)} (n,r \ne m)} \alpha_{t-1} P(S_t | S_{t-1}) P(Y_t | S_t) \beta_t}{\sum_{S_{t-1},S_t} \alpha_{t-1} P(S_t | S_{t-1}) P(Y_t | S_t) \beta_t}
+\end{align*}
 
 \section{Completely factorized variational approximation}
 
