@@ -290,6 +290,29 @@ Using $\alpha_t$, $\beta_t$ and $\gamma_t$, the quantities required for the M st
 
 \section{Completely factorized variational approximation}
 
+From the definition of the variational distribution, we have:
+\begin{align*}
+\langle S_t^{(m)} \rangle &= \theta_t^{(m)} \\
+\langle S_{t-1}^{(m)} S_t^{(m)^\mathsf{T}} \rangle &= \theta_{t-1}^{(m)} \theta_t^{(m)^\mathsf{T}} \\
+\langle S_t^{(m)} S_t^{(n)^\mathsf{T}} \rangle &= \left\{
+  \begin{array}{rcr}
+    \theta_{t}^{(m)} \theta_t^{(n)^\mathsf{T}} \quad \textnormal{if} \ \ m \ne n \\
+    diag\Big\{\theta_t^{(m)}\Big\} \quad \textnormal{if} \ \ m = n \\
+  \end{array}
+\right.
+\end{align*}
+
+The KL divergence can therefore be written as:
+
+\begin{align*}
+KL = &\sum_{t=1}^T \sum_{m=1}^M \theta_t^{(m)^\mathsf{T}} \log \theta_t^{(m)} + \frac{1}{2} \sum_{t=1}^T \Bigg[ Y_t^\mathsf{T} C^{-1} W^{(m)} \theta_t^{(m)} + \sum_{m=1}^M \sum_{n \ne m} \Tr\bigg\{ W^{(m)^\mathsf{T}} C^{-1} W^{(n)} \theta_t^{(n)} \theta_t^{(m)^\mathsf{T}} \bigg\} \\
+&+ \sum_{m=1}^M \Tr\bigg\{ W^{(m)^\mathsf{T}} C^{-1} W^{(n)} diag\Big\{\theta_t^{(m)}\Big\} \bigg\} \Bigg] + \sum_{m=1}^M \theta_1^{(m)^\mathsf{T}} \log \pi^{(m)} \\
+&+ \sum_{t=2}^T \sum_{m=1}^M \Tr\bigg\{ \theta_{t-1}^{(m)} \theta_t^{(m)^\mathsf{T}} \log P^{(m)} \bigg\} - \log Z'
+\end{align*}
+where $Z'$ is a normalization term
+
+Setting the derivative with respect to $\theta_t^{(m)}$ to zero, we obtain equation ??.
+
 \section{Structured approximation}
 
 \end{document}
