@@ -247,7 +247,7 @@ This reproduces similar patterns of factorial HMMs, and even sometimes found the
 
 \subsection{Experiments on real data}
 
-We applied the structural variational approximation on real data. First we choose the dataset "Activity Recognition from Single Chest-Mounted Accelerometer Data Set" from UCI Repository, which records the acceleration of persons during different activities such as walking, going up/down stairs or working at computer. We tried to learn parameters of each of theses activities, and then for a new activity we compute the log-likelihood of each set of parameters, and the set of parameters that gave the biggest log-likelihood would be the recognized activity. In practice the data is not separated in several Gaussians \ref{fig5} so it performs poorly at recognizing activities.
+We applied the structural variational approximation on real data as it is tractable, faster than Gibbs sampling and places fewer constraints than the completely factorized variational approximation. First we choose the dataset "Activity Recognition from Single Chest-Mounted Accelerometer Data Set" from UCI Repository, which records the acceleration of persons during different activities such as walking, going up/down stairs or working at computer. We tried to learn parameters of each of theses activities, and then for a new activity we compute the log-likelihood of each set of parameters, and the set of parameters that gave the biggest log-likelihood would be the recognized activity. In practice the data is not separated in several Gaussians \ref{fig5} so it performs poorly at recognizing activities.
 
 \begin{figure}[h]
 	\centering
