@@ -95,8 +95,8 @@ For the factorial HMM, the parameters of the model are $\phi = \{ W^{(m)}, \pi^{
 As in HMMs, the exact M step for factorial HMMs is simple and tractable. We now focus on the more difficult problem of computing the expectation.
 
 \subsection{Exact inference}
-% Forward-Backward algorithm
-$\mathcal{O}(T M K^{M+1})$
+
+The exact inference is based on the forward-backward algorithm. The naive approach consisting of translating the factorial HMM into a HMM with $K^M$ states has a time complexity of $\mathcal{O}(T K^{2M})$. Using the independence of the Markov chains, we obtain a time complexity of $\mathcal{O}(T M K^{M+1})$. To compute posterior probabilities, we must sum over all possible configurations of the other hidden state variables within each time step. Thus the exact E step for factorial HMMs is computationally intractable.
 
 \subsection{Inference using Gibbs sampling}
 
