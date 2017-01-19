@@ -58,7 +58,7 @@
 \maketitle
 
 \begin{abstract}
-  Hidden Markov models (HMMs) is one of the most used tools for learning probabilistic models of time series data. In an HMM, information about the past are pass along trough a single discrete variable, the hidden state. We discuss a generalization of HMMs in which the state is factored into multiple state variables and is therefore represented in a distributed manner. We describe an exact algorithm for inferring the posterior the posterior probabilities of the hidden state variables given the observations along with other approximate inference algorithms such that Gibbs sampling or variational methods. Finally, we test our algorithms on synthetic and real dataset.
+  Hidden Markov models (HMMs) is one of the most used tools for learning probabilistic models of time series data. In an HMM, information about the past are pass along trough a single discrete variable, the hidden state. We discuss a generalization of HMMs in which the state is factored into multiple state variables and is therefore represented in a distributed manner. We describe an exact algorithm for inferring the posterior probabilities of the hidden state variables given the observations along with other approximate inference algorithms such that Gibbs sampling or variational methods. Finally, we test our algorithms on synthetic and real dataset.
 \end{abstract}
 
 \section{Introduction}
@@ -190,7 +190,7 @@ We set the covariance matrix $C$ to be a multiple of the identity matrix $C = 0.
 &    & \multicolumn{1}{c}{SVA} & \multicolumn{1}{c}{4.01} & \multicolumn{1}{c}{4.31} \\  
 \hline 
 \end{tabular}
-\caption{Comparison of the four algorithms on problems of varying size. For each problem size ans algorithm, we show, for the training and test set, the negative log-likelihood, measured in bits per observation (log-likelihood in bits divided by $T$) relative to the log-likelihood under the true generative model.}
+\caption{Comparison of the four algorithms on problems of varying size. For each problem size and algorithm, we show, for the training and test set, the negative log-likelihood, measured in bits per observation (log-likelihood in bits divided by $T$) relative to the log-likelihood under the true generative model.}
 \label{tab1}
 \end{table}
 
@@ -226,6 +226,18 @@ All algorithms are highly sensitive to initialization, different runs on the tra
 
 \subsection{Experiments on real data}
 
+We applied the structural variational approximation on real data. First we choose the dataset "Activity Recognition from Single Chest-Mounted Accelerometer Data Set" from UCI Repository, which records the acceleration of persons during different activities such as walking, going up/down stairs or working at computer. We tried to learn parameters of each of theses activities, and then for a new activity we compute the log-likelihood of each set of parameters, and the set of parameters that gave the biggest log-likelihood would be the recognized activity. In practice the data is not separated in several Gaussians \ref{fig5} so it performs poorly at recognizing activities.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\textwidth]{standing.png}
+	\centerline{Example of data from Single Chest-Mounted Accelerometer Data Set}
+	\label{fig5}
+\end{figure}
+
+
+
+\clearpage
 \section{Conclusion}
 
 \section*{References}
