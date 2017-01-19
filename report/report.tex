@@ -63,6 +63,10 @@
 
 \section{Introduction}
 
+In this project we only want to learn the parameters of models, we assume that the structure is fixed and known. Thus, we used the most used structure of Hidden Markov Models, where it is represented by hidden states $S_t$, and observations $Y_t$ following a Gaussian distribution of mean $W*S_t$ where $W$ is an unknown parameter of the model. Inference over HMMs can be exactly computed using the forward-backward algorithm, but in practice this exact computation takes time and it is sometimes too long to be used.
+
+In this report we present a generalization of such HMMs that can generalize the model and speed up the inference problem. The main key is to separate the hidden state $S_t$ in several states $(S_t^{(1)},\dots,S_t^{(M)})$ where each $S_t^{(m)}$ takes fewer values. So we will firstly present the probabilistic model of factorial HMMs, and then expose four algorithms that solve the inference problem (Exact inference, Gibbs sampling, Completely factorized variational inference and Structured variational inference). Eventually we show experiments on synthetic and real data.
+
 \section{The probabilistic model}
 We generalize the HMM state representation by representing the state as a collection of state variables:
 \[ S_t = (S_t^{(1)},\dots,S_t^{(M)}) \]
@@ -256,6 +260,10 @@ We applied the structural variational approximation on real data. First we choos
 \end{figure}
 
 Then we tried another dataset : CalIt2 Building People Counts Data Set, which counts the number of persons that come in and out of a building. So we expect different cluster such as the beginning of the day when every one comes in and nobody comes out, the night when there is no movement, or the lunch pause when there is many people coming both ways. Unfortunately, here again the dataset does not seem very structured \ref{fig6}.
+\newline
+
+We observe that the algorithm catches the global cluster in the center and the cluster on the bottom-left corner but other clusters are a little useless.
+\clearpage
 
 \begin{figure}[h]
 	\begin{minipage}[b]{.49\linewidth}
@@ -277,9 +285,6 @@ Then we tried another dataset : CalIt2 Building People Counts Data Set, which co
 	\label{fig:f}
 \end{figure}
 
-We observe that the algorithm catches the global cluster in the center and the cluster on the bottom-left corner but other clusters are a little useless.
-
-\clearpage
 \section{Conclusion}
 
 HMMs are used a lot and the factorial HMMs offers a generalization and a speed up in learning time-series probabilistic models. But in order to be efficient, the data must have regular clusters, organized in some patterns and few dataset have theses patterns. Moreover, the assumption that the covariance matrix is the same for each cluster seems false in many cases.
