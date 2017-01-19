@@ -71,18 +71,17 @@ In this report we present a generalization of such HMMs that can generalize the 
 We generalize the HMM state representation by representing the state as a collection of state variables:
 \[ S_t = (S_t^{(1)},\dots,S_t^{(M)}) \]
 each of which can take $K^{(m)}$ values. We refer to these models as \emph{factorial hidden Markov models}, as the state space consists of the cross product of these state variables.In this paper, we consider the case where $K^{(m)} = K$ for all $m$ and we focus on factorial HMMs in which each state variable is \emph{a priori} uncoupled from the other state variables:
-\begin{equation} 
-P(S_{t+1}|S_t) = \prod_{m=1}^M P(S_{t+1}^{(m)}|S_t^{(m)}) 
-\end{equation}
+\[ P(S_{t+1}|S_t) = \prod_{m=1}^M P(S_{t+1}^{(m)}|S_t^{(m)}) \]
 The transition structure for this model can be represented by $M$ distinct $K \times K$ matrices.
 
 In a factorial HMM, the observation at time $t$ depend on all the state variables at that time step, therefore we represent the observation $Y_t$ as a Gaussian random vector whose mean is a linear function of the state variables. Representing the state variables as $K \times 1$ vectors, where each of the $K$ discrete values corresponds to a 1 in one position and 0 elsewhere, the probability density for a $D \times 1$ observation vector $Y_t$ is given by:
 \begin{equation}
 P(Y_t|S_t) = (2 \pi)^{-D/2} \left| C \right|^{-1/2} \exp \left( -\frac{1}{2} (Y_t - \mu_t)^\mathsf{T} C^{-1} (Y_t - \mu_t) \right)
+\label{eq1}
 \end{equation}  
 where $\mu_t = \sum_{m=1}^M W^{(m)} S_t^{(m)}$, each $W^{(m)}$ is a $D \times K$ matrix whose columns are the contributions to the means for each of the settings of $S_t^{(m)}$, $C$ is the $D \times D$ covariance matrix and $\left| \cdot \right|$ is the matrix determinant operator.
 
-The hidden state variables at one time step, although marginally independent, become conditionally dependent given the observation sequence. By equation ??, the posterior probability of each of the settings of the hidden state variables is proportional to the probability of $Y_t$ under a Gaussian with mean $\mu_t$. Since $\mu_t$ is a function of all the state variables, the probability of a setting of one of the state variables will depend on the setting of the other state variables. This dependency effectively couples all of the hidden state variables for the purposes of calculating posterior probabilities and makes exact inference intractable for the factorial HMM.
+The hidden state variables at one time step, although marginally independent, become conditionally dependent given the observation sequence. By equation \ref{eq1}, the posterior probability of each of the settings of the hidden state variables is proportional to the probability of $Y_t$ under a Gaussian with mean $\mu_t$. Since $\mu_t$ is a function of all the state variables, the probability of a setting of one of the state variables will depend on the setting of the other state variables. This dependency effectively couples all of the hidden state variables for the purposes of calculating posterior probabilities and makes exact inference intractable for the factorial HMM.
 
 \section{Inference and learning}
 
@@ -100,21 +99,21 @@ As in HMMs, the exact M step for factorial HMMs is simple and tractable. We now 
 
 \subsection{Exact inference}
 
-The exact inference is based on the forward-backward algorithm. The naive approach consisting of translating the factorial HMM into a HMM with $K^M$ states has a time complexity of $\mathcal{O}(T K^{2M})$. Using the independence of the Markov chains, we obtain a time complexity of $\mathcal{O}(T M K^{M+1})$. To compute posterior probabilities, we must sum over all possible configurations of the other hidden state variables within each time step. Thus the exact E step for factorial HMMs is computationally intractable.
+The exact inference is based on the forward-backward algorithm. The naive approach consisting of translating the factorial HMM into a HMM with $K^M$ states has a time complexity of $\mathcal{O}(T K^{2M})$. Using the independence of the Markov chains, we obtain a time complexity of $\mathcal{O}(T M K^{M+1})$. To compute posterior probabilities, we must sum over all possible configurations of the other hidden state variables within each time step. This makes the exact E step for factorial HMMs computationally intractable.
 
 \subsection{Inference using Gibbs sampling}
 
 The main idea is to approximate the posterior probabilities using a Monte Carlo sampling procedure. Here we consider Gibbs sampling. For a given observation sequence $\{Y_t\}$, we begin with a random setting of the hidden states $\{S_t\}$. At each step of the sampling process, each state vector is updated stochastically according to its probability distribution conditioned on the setting of all the other state vectors.
 \begin{align*}
 S_t^{(m)} \textnormal{ sampled from } & P(S_t^{(m)} | \{S_t^{(n)} | n \ne m \}, S_{t-1}^{(m)}, S_{t+1}^{(m)}, Y_t) \\
-\propto & P(S_t^{(m)} | S_{t-1}^{(m)}) P(S_{t+1}^{(m)} | S_{t}^{(m)}) P(Y_t | S_{t}^{(1)}, \dots, S_{t}^{(M)})
+\propto & \ P(S_t^{(m)} | S_{t-1}^{(m)}) P(S_{t+1}^{(m)} | S_{t}^{(m)}) P(Y_t | S_{t}^{(1)}, \dots, S_{t}^{(M)})
 \end{align*}
 
 One step of the sampling procedure results in a new sample and require $\mathcal{O}(TMK)$ operations. Gibbs sampling defines a Markov chain over the state space and if all probabilities are away from zero, this Markov chain is guaranteed to converge to the posterior probabilities.
 
 \subsection{Completely factorized variational inference}
 
-The main idea here is to approximate the posterior distribution over the hidden variables $P(\{S_t\}|\{Y_t\})$ by a tractable distribution $Q(\{S_t\})$ and make the assumption that the state variables are independent given the observations. Thus $Q$ can therefore be written as:
+The main idea here is to approximate the posterior distribution over the hidden variables $P(\{S_t\}|\{Y_t\})$ by a tractable distribution $Q(\{S_t\})$ and make the assumption that the state variables are independent given the observations. Thus $Q$ can be written as:
 \[ Q(\{S_t\}|\theta) = \prod_{t=1}^T \prod_{m=1}^M Q(S_t^{(m)}|\theta_t^{(m)}) \]
 where the variational parameters $\theta = \{ \theta_t^{(m)} \}$ are the means of the state variables. Therefore, representing the state variables as a $K$-dimensional vector, the elements of the vector $\theta_t^{(m)}$ define the state occupation probabilities for the multinomial variable $S_t^{(m)}$ under the distribution $Q$:
 \[ Q(S_t^{(m)}|\theta_t^{(m)}) = \prod_{k=1}^K \left( \theta_{t,k}^{(m)} \right)^{S_{t,k}^{(m)}} \]
@@ -122,12 +121,13 @@ where the variational parameters $\theta = \{ \theta_t^{(m)} \}$ are the means o
 Minimizing the KL divergence, one obtains:
 \begin{equation}
 \theta_t^{(m) \ \textnormal{new}} = \varphi\{ W^{(m)^\mathsf{T}} C^{-1} \widetilde{Y}_t^{(m)} - \frac{1}{2} \Delta^{(m)} + \log(P^{(m)}) \theta_{t-1}^{(m)} + \log(P^{(m)})^\mathsf{T} \theta_{t+1}^{(m)} \}
+\label{eq2}
 \end{equation}
 where $\widetilde{Y}_t^{(m)} = Y_t - \sum_{l \ne m}^M W^{(l)} \theta_t^{(l)}$, $\Delta^{(m)}$is the vector of diagonal elements of $W^{(m)^\mathsf{T}} C^{-1} W^{(m)}$ and $\varphi$ is the softmax operator.
 
-Although the posterior distribution over the hidden variables is approximated with a completely factorized distribution, we still have dependencies forward and backward in time. These dependencies come from the fact that at each time step, the Markov chains are stochastically coupled
+Although the posterior distribution over the hidden variables is approximated with a completely factorized distribution, we still have dependencies forward and backward in time. These dependencies come from the fact that at each time step, the Markov chains are stochastically coupled.
 
-Each hidden state is updated using ?? with a time complexity of $\mathcal{O}(T M K^2)$ per iteration. The convergence of this procedure is determined by the convergence of the KL divergence in the variational distribution between successive time steps.
+Each hidden state is updated using \ref{eq2} with a time complexity of $\mathcal{O}(T M K^2)$ per iteration. The convergence of this procedure is determined by the convergence of the KL divergence in the variational distribution between successive time steps.
 
 \subsection{Structured variational inference}
 
@@ -138,6 +138,7 @@ where $Z_Q$ is a normalization term, $Q( S_1^{(m)} | \theta)= \prod_{k=1}^K \lef
 Minimizing the KL divergence as a function of $h_t^{(m)}$, one obtains:
 \begin{equation}
 h_t^{(m) \ \textnormal{new}} = \exp\{ W^{(m)^\mathsf{T}} C^{-1} \widetilde{Y}_t^{(m)} - \frac{1}{2} \Delta^{(m)} \}
+\label{eq3}
 \end{equation}
 where $\Delta^{(m)}$ is defined as before and the residual error is $\widetilde{Y}_t^{(m)} = Y_t - \sum_{l \ne m}^M W^{(l)} \langle S_t^{(l)} \rangle$.
 
@@ -259,10 +260,10 @@ We applied the structural variational approximation on real data. First we choos
 	\label{fig5}
 \end{figure}
 
-Then we tried another dataset : CalIt2 Building People Counts Data Set, which counts the number of persons that come in and out of a building. So we expect different cluster such as the beginning of the day when every one comes in and nobody comes out, the night when there is no movement, or the lunch pause when there is many people coming both ways. Unfortunately, here again the dataset does not seem very structured \ref{fig6}.
+Then we tried another dataset : CalIt2 Building People Counts Data Set, which counts the number of persons that come in and out of a building. So we expect different cluster such as the beginning of the day when every one comes in and nobody comes out, the night when there is no movement, or the lunch pause when there is many people coming both ways. Unfortunately, here again the dataset does not seem very structured \ref{fig7}.
 \newline
 
-We observe that the algorithm catches the global cluster in the center and the cluster on the bottom-left corner but other clusters are a little useless.
+In figure \ref{fig8}, we observe that the algorithm catches the global cluster in the center and the cluster on the bottom-left corner but other clusters are a little useless.
 \clearpage
 
 \begin{figure}[h]
@@ -272,6 +273,7 @@ We observe that the algorithm catches the global cluster in the center and the c
 		%  \vspace{1.5cm}
 		\begin{center}
 			\caption{Example of data from CalIt2 Building People Counts Data Set, red points are frequent points}
+			\label{fig7}
 		\end{center}\medskip
 	\end{minipage}
 	\hfill
@@ -280,10 +282,11 @@ We observe that the algorithm catches the global cluster in the center and the c
 		%  \vspace{1.5cm}
 		\begin{center}
 			\caption{Centers found by structural variational approximation with the parameters $M = 2$ and $K = 3$}
+			\label{fig8}
 		\end{center}\medskip
 	\end{minipage}
-	\label{fig:f}
 \end{figure}
+
 
 \section{Conclusion}
 
@@ -327,7 +330,7 @@ Here we describe an exact forward-backward recursion which uses the independence
 \alpha_t^{(0)} &= P(S_t^{(1)},\dots,S_t^{(M)}, \{Y_\tau \}_1^{t-1} | \phi) \\
 \alpha_t^{(1)} &= P(S_{t-1}^{(1)},\dots,S_t^{(M)}, \{Y_\tau \}_1^{t-1} | \phi) \\
 &\vdots \\
-\alpha_t^{(M)} &= P(S_t{t-1}^{(1)},\dots,S_{t-1}^{(M)}, \{Y_\tau \}_1^{t-1} | \phi)
+\alpha_t^{(M)} &= P(S_{t-1}^{(1)},\dots,S_{t-1}^{(M)}, \{Y_\tau \}_1^{t-1} | \phi)
 \end{align*}
 
 Then we obtain the forward recursions:
@@ -339,7 +342,7 @@ Similarly for the backward recursions we define:
 \beta_{t-1}^{(M)} &= P(\{Y_\tau \}_{t}^T | S_t^{(1)},\dots,S_t^{(M)}, \phi) \\
 &\vdots \\ 
 \beta_{t-1}^{(1)} &= P(\{Y_\tau \}_{t}^T | S_t^{(1)}, S_{t-1}^{(1)}, \dots,S_{t-1}^{(M)}, \phi) \\
-\beta_{t-1}^{(0)} = \beta_{t-1}
+\beta_{t-1}^{(0)} &= \beta_{t-1}
 \end{align*}
 
 And obtain:
@@ -374,11 +377,10 @@ The KL divergence can therefore be written as:
 \begin{align*}
 KL = &\sum_{t=1}^T \sum_{m=1}^M \theta_t^{(m)^\mathsf{T}} \log \theta_t^{(m)} + \frac{1}{2} \sum_{t=1}^T \Bigg[ Y_t^\mathsf{T} C^{-1} Y_t - 2 \sum_{m=1}^M Y_t^\mathsf{T} C^{-1} W^{(m)} \theta_t^{(m)} \\
 &+ \sum_{m=1}^M \sum_{n \ne m} \Tr\bigg\{ W^{(m)^\mathsf{T}} C^{-1} W^{(n)} \theta_t^{(n)} \theta_t^{(m)^\mathsf{T}} \bigg\} + \sum_{m=1}^M \Tr\bigg\{ W^{(m)^\mathsf{T}} C^{-1} W^{(m)} diag\Big\{\theta_t^{(m)}\Big\} \bigg\} \Bigg] \\
-&+ \sum_{m=1}^M \theta_1^{(m)^\mathsf{T}} \log \pi^{(m)} + \sum_{t=2}^T \sum_{m=1}^M \Tr\bigg\{ \theta_{t-1}^{(m)} \theta_t^{(m)^\mathsf{T}} \log P^{(m)} \bigg\} - \log Z'
+&+ \sum_{m=1}^M \theta_1^{(m)^\mathsf{T}} \log \pi^{(m)} + \sum_{t=2}^T \sum_{m=1}^M \Tr\bigg\{ \theta_{t-1}^{(m)} \theta_t^{(m)^\mathsf{T}} \log P^{(m)} \bigg\} - \log Z_Q + \log Z
 \end{align*}
-where $Z'$ is a normalization term
 
-Setting the derivative with respect to $\theta_t^{(m)}$ to zero, we obtain equation ??.
+Setting the derivative with respect to $\theta_t^{(m)}$ to zero, we obtain equation \ref{eq2}.
 
 \section{Structured approximation}
 
@@ -386,10 +388,11 @@ For the structured approximation, the KL divergence is given by:
 \begin{align*}
 KL = &\sum_{t=1}^T \sum_{m=1}^M \langle S_t^{(m)} \rangle \log h_t^{(m)} + \frac{1}{2} \sum_{t=1}^T \Bigg[ Y_t^\mathsf{T} C^{-1} Y_t - 2 \sum_{m=1}^M Y_t^\mathsf{T} C^{-1} W^{(m)} \langle S_t^{(m)} \rangle \\
 &+ \sum_{m=1}^M \sum_{n \ne m} \Tr\bigg\{ W^{(m)^\mathsf{T}} C^{-1} W^{(n)} \langle S_t^{(n)} \rangle \langle S_t^{(m)^\mathsf{T}} \rangle \bigg\} \\
-&+ \sum_{m=1}^M \Tr\bigg\{ W^{(m)^\mathsf{T}} C^{-1} W^{(m)} diag\Big\{\langle S_t^{(m)} \rangle\Big\} \bigg\} \Bigg] - \log Z'
+&+ \sum_{m=1}^M \Tr\bigg\{ W^{(m)^\mathsf{T}} C^{-1} W^{(m)} diag\Big\{\langle S_t^{(m)} \rangle\Big\} \bigg\} \Bigg] - \log Z_Q + \log Z
 \end{align*}
 
-Taking derivatives with respect to $\log h_t^{(n)}$ and setting it to zero yields equation ??.
+Taking derivatives with respect to $\log h_t^{(n)}$ and setting it to zero yields equation \ref{eq3}.
 
 \end{document}
+
 
