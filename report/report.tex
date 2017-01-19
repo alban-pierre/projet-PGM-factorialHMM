@@ -290,7 +290,7 @@ In figure \ref{fig8}, we observe that the algorithm catches the global cluster i
 
 \section{Conclusion}
 
-HMMs are used a lot and the factorial HMMs offers a generalization and a speed up in learning time-series probabilistic models. But in order to be efficient, the data must have regular clusters, organized in some patterns and few dataset have theses patterns. Moreover, the assumption that the covariance matrix is the same for each cluster seems false in many cases.
+In this project, we have discussed a generalization of hidden Markov models called factorial HMM, in which the state is factored into multiple state variables providing a richer model. We described an exact algorithm to learn its parameters and, as it is generally intractable, three other approximate algorithms. Nevertheless in order to be efficient, the data must have regular clusters, organized in some patterns and few dataset have theses patterns. Moreover, the assumption that the covariance matrix is the same for each cluster seems false in many cases.
 \newline
 
 Thus, further work should relax the covariance matrix equality for each cluster. It may also be helpful to add some links between each parallel HMM to match more complicated data, without being limited to match patterns, but these links should be added with parsimony as it quickly complicates the model.
