@@ -224,13 +224,33 @@ All algorithms are highly sensitive to initialization, different runs on the tra
   \label{fig4} 
 \end{figure}
 
+HMMs are frequently initialized by a k-means algorithm, but in the case of a factorial HMM, the means of clusters are organized in some patterns, indeed changing one hidden state $S^{(m)}_t$ translates the mean $\mu_t = \sum_{m=1}^M W^{(m)} S_t^{(m)}$, and this translation does not depend of other hidden states. This makes the k-means initialization impossible to use. So we designed another initialization adapted to factorial HMMs and it works as follows :
+\begin{verbatim}
+For m = 1 to M
+    k = kmeans with K centers
+    Superpose each cluster k found
+    W(m) = k
+    P(m) = probabilities of clusters k
+endFor
+\end{verbatim}
+Where the superposition of clusters is just the affectation for each observed points $Y_t = Y_t - k_t$ for $k_t$ the nearest cluster of $Y_t$. Also the affectation of $W$ and $P$ are done hidden state per hidden state.
+
+This reproduces similar patterns of factorial HMMs, and even sometimes found the right centers quite precisely. In practice, the four algorithms founds on average higher local maxima. An example of clusters found by this initialization and the four algorithms is show in figure \ref{fig6}. We see there that the initialization is not very far from the true parameters and that three of the four algorithms gives quite good approximations.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1.0\textwidth]{fig11.png}
+	\caption{Centers for synthetic data. Blue dots are the observed points $Y_t$, and we have : Crosses = centers, Circles = probabilities of each center, Blue = True parameters, Light Blue = Our k-means Initialization, Violet = FHMM, CFVA, SVA (they found the same result), Green = Gibbs sampling}
+	\label{fig6}
+\end{figure}
+
 \subsection{Experiments on real data}
 
 We applied the structural variational approximation on real data. First we choose the dataset "Activity Recognition from Single Chest-Mounted Accelerometer Data Set" from UCI Repository, which records the acceleration of persons during different activities such as walking, going up/down stairs or working at computer. We tried to learn parameters of each of theses activities, and then for a new activity we compute the log-likelihood of each set of parameters, and the set of parameters that gave the biggest log-likelihood would be the recognized activity. In practice the data is not separated in several Gaussians \ref{fig5} so it performs poorly at recognizing activities.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.7\textwidth]{standing.png}
+	\includegraphics[width=0.5\textwidth]{standing.png}
 	\caption{Example of data from Single Chest-Mounted Accelerometer Data Set}
 	\label{fig5}
 \end{figure}
